@@ -1,0 +1,41 @@
+{
+  "contract": 1,
+  "id": "flint.docker",
+  "name": "Docker",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Containers of the Docker Engine grouped by Compose project: start, stop, restart and remove them, compose up, down and pull, and terminal tabs for their logs and a shell.",
+  "run": { "command": "docker-ext", "env": ["DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_CONFIG", "DOCKER_TLS_VERIFY", "DOCKER_CERT_PATH"] },
+  "activation": ["onView:flint.docker.containers", "onCommand:flint.docker.refresh"],
+  "permissions": ["terminal"],
+  "contributes": {
+    "commands": [
+      { "id": "flint.docker.refresh", "title": "Refresh Containers", "category": "Docker" }
+    ],
+    "panels": [
+      { "id": "flint.docker.containers", "title": "Docker", "icon": "ship", "order": 10, "view": "tree" }
+    ],
+    "statusItems": [{ "id": "flint.docker.running", "order": 20 }],
+    "settings": {
+      "title": "Docker",
+      "properties": {
+        "host": {
+          "type": "string",
+          "default": "",
+          "maxLength": 512,
+          "pattern": "(/\\S*|(unix|tcp|http|https)://\\S+)?",
+          "title": "Engine address",
+          "description": "unix:///path/docker.sock, tcp://host:2376 or https://host:2376. Empty finds the engine like the docker CLI: the current docker context, then the default sockets (Docker Desktop, Colima, OrbStack, Rancher Desktop). Plain tcp:// without TLS works but is flagged in the panel."
+        },
+        "logTailLines": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000,
+          "default": 500,
+          "title": "Log lines at the start",
+          "description": "How many past lines a container's log tab shows before it follows new output."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "contract": 1,
+  "id": "flint.aws",
+  "name": "AWS Profiles",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "The AWS CLI profiles of ~/.aws with the state of their credentials: log in, refresh credentials, check who you are, and open terminals working as a profile.",
+  "run": { "command": "aws-ext", "env": ["AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE", "AWS_CA_BUNDLE", "SAML2AWS_CONFIGFILE"] },
+  "activation": ["onView:flint.aws.profiles", "onCommand:flint.aws.refresh"],
+  "permissions": ["terminal"],
+  "contributes": {
+    "commands": [
+      { "id": "flint.aws.refresh", "title": "Refresh AWS Profiles", "category": "AWS" }
+    ],
+    "panels": [
+      { "id": "flint.aws.profiles", "title": "AWS Profiles", "icon": "cloud", "order": 30, "view": "tree" }
+    ],
+    "settings": {
+      "title": "AWS Profiles",
+      "properties": {
+        "refreshSeconds": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 3600,
+          "default": 30,
+          "title": "Refresh every (seconds)",
+          "description": "How often profiles and credential expiry are re-read while the panel is shown."
+        }
+      }
+    }
+  }
+}
