@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <title>Notes</title>
+  <style>
+    /* Flint's theme arrives as CSS variables on :root (flint.theme). */
+    body { margin: 0; font: 13px var(--font-ui, system-ui); color: var(--fg); background: var(--bg-sidebar); }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; color: var(--fg-muted); }
+    button { font: inherit; color: var(--accent); background: none; border: none; cursor: pointer; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { padding: 4px 10px; cursor: pointer; }
+    li:hover { background: var(--bg-hover); }
+    .muted { color: var(--fg-faint); padding: 4px 10px; }
+  </style>
+</head>
+<body>
+  <header><span>Notes</span><button id="new">+ New</button></header>
+  <ul id="list"></ul>
+  <script>
+    const list = document.getElementById('list')
+    async function load() {
+      try {
+        const notes = await flint.request('list')
+        list.replaceChildren(...notes.map((n) => {
+          const li = document.createElement('li')
+          li.textContent = n.title || 'Untitled'
+          li.onclick = () => flint.request('open', n.id)
+          return li
+        }))
+        if (!notes.length) list.innerHTML = '<li class="muted">No notes.</li>'
+      } catch (err) {
+        list.innerHTML = ''
+        flint.showMessage('error', String(err.message || err))
+      }
+    }
+    document.getElementById('new').onclick = () => flint.request('new')
+    flint.onMessage(() => load()) // the process says a note changed
+    load()
+  </script>
+</body>
+</html>

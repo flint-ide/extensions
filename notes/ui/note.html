@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <title>Note</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { display: flex; flex-direction: column; font: 13px var(--font-ui, system-ui); color: var(--fg); background: var(--bg-editor); }
+    input, textarea { font: inherit; color: inherit; background: transparent; border: none; outline: none; padding: 10px 14px; }
+    input { font-size: 18px; font-weight: 600; border-bottom: 1px solid var(--border); }
+    textarea { flex: 1; resize: none; font-family: var(--font-mono, monospace); }
+  </style>
+</head>
+<body>
+  <input id="title" placeholder="Title">
+  <textarea id="text" placeholder="Write…"></textarea>
+  <script>
+    // flint.key is the tab's key (the note id); ⌘S saves, other shortcuts reach Flint.
+    const title = document.getElementById('title')
+    const text = document.getElementById('text')
+    let saved = ''
+    const current = () => JSON.stringify({ title: title.value, text: text.value })
+    const dirty = () => flint.setDirty(current() !== saved)
+    async function save() {
+      await flint.request('save', { title: title.value, text: text.value })
+      saved = current()
+      flint.setTitle(title.value || 'Untitled')
+      dirty()
+    }
+    title.oninput = text.oninput = dirty
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault()
+        save()
+      }
+    })
+    flint.request('get').then((n) => {
+      title.value = n.title
+      text.value = n.text
+      saved = current()
+      text.focus()
+    }, (err) => flint.showMessage('error', String(err.message || err)))
+  </script>
+</body>
+</html>
