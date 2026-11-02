@@ -1,0 +1,15 @@
+{
+  "contract": 1,
+  "id": "example.notes",
+  "name": "Notes",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "An example of webviews: a panel and tabs with the extension's own UI.",
+  "run": { "command": "notes" },
+  "activation": ["onView:example.notes.list", "onView:example.notes.note", "onCommand:example.notes.new"],
+  "contributes": {
+    "commands": [{ "id": "example.notes.new", "title": "New Note", "category": "Notes" }],
+    "panels": [{ "id": "example.notes.list", "title": "Notes", "icon": "pencil", "order": 300, "view": "webview", "webview": { "html": "ui/list.html" } }],
+    "tabViews": [{ "id": "example.notes.note", "title": "Note", "icon": "pencil", "view": "webview", "webview": { "html": "ui/note.html" }, "restore": true }]
+  }
+}

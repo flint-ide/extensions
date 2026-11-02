@@ -1,6 +1,6 @@
 # Flint extensions
 
-Extensions for [Flint](https://github.com/flint-ide/flint). An extension is a separate program, in any language, that talks to Flint over JSON-RPC 2.0 on stdin and stdout. It can add commands, sidebar panels, a settings page, status bar items and read-only tools for agents. Flint draws all of its UI; an extension never runs code inside Flint's window.
+Extensions for [Flint](https://github.com/flint-ide/flint). An extension is a separate program, in any language, that talks to Flint over JSON-RPC 2.0 on stdin and stdout. It can add commands, sidebar panels, a settings page, status bar items and read-only tools for agents. Flint draws its UI from data, or, for a **webview**, shows the extension's own HTML in a sandboxed frame that has no network and no access to Flint beyond a small bridge.
 
 How extensions work, the manifest and every protocol message are documented in the Flint repository:
 
@@ -13,6 +13,7 @@ How extensions work, the manifest and every protocol message are documented in t
 | Folder | Extension | What it does |
 |---|---|---|
 | [`stats`](stats) | Project Stats | Counts the files of the open projects by type: a panel, a status bar item and an agent tool. Also the example in Flint's docs. |
+| [`notes`](notes) | Notes | Notes in a panel and tabs drawn by the extension's own HTML: the example of webviews (panels and tab views, the `window.flint` bridge, session restore). |
 
 ## Install one
 
