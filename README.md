@@ -17,6 +17,11 @@ How extensions work, the manifest and every protocol message are documented in t
 | [`docker`](docker) | Docker | Containers of the Docker Engine grouped by Compose project: start, stop, restart, remove, compose up/down/pull, logs and shells in terminal tabs. Replaces Flint's built-in Docker panel. |
 | [`kubernetes`](kubernetes) | Kubernetes | Clusters through kubectl in its own webview: apps with health, workloads, pods, services, jobs, rollouts, scaling, logs and shells, diagnosis for agents and the `kubernetes_status` agent tool. Replaces Flint's built-in Kubernetes panel. |
 | [`aws`](aws) | AWS Profiles | The AWS CLI profiles with their credentials: log in (SSO, saml2aws), refresh, check identity, terminals as a profile. Replaces Flint's built-in AWS Profiles panel. |
+| [`flint-themes`](flint-themes) | Flint Themes | Flint's own color themes: Graphite (dark stone gray with a spark of orange) and Paper (warm light). |
+| [`catppuccin`](catppuccin) | Catppuccin | Color themes: Latte, Frappé, Macchiato, Mocha. |
+| [`tokyo-night`](tokyo-night) | Tokyo Night | Color themes: Night, Storm, Day. |
+| [`gruvbox`](gruvbox) | Gruvbox | Color themes: Dark, Light. |
+| [`nord`](nord) | Nord | Color theme: Nord. |
 
 ## Install one
 
