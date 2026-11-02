@@ -1,0 +1,66 @@
+{
+  "contract": 1,
+  "id": "example.stats",
+  "name": "Project Stats",
+  "version": "0.1.0",
+  "publisher": "Flint examples",
+  "description": "Counts the files of the open projects by type: a panel, a status bar item and a tool for agents.",
+  "run": { "command": "stats" },
+  "activation": ["onView:example.stats.files", "onCommand:example.stats.refresh", "onAgentTool:summary"],
+  "permissions": ["workspace.read"],
+  "contributes": {
+    "commands": [
+      { "id": "example.stats.refresh", "title": "Count Files Again", "category": "Project Stats", "keys": "Mod+Alt+Shift+S" },
+      { "id": "example.stats.open", "title": "Open Largest File", "category": "Project Stats" }
+    ],
+    "panels": [
+      { "id": "example.stats.files", "title": "Project Stats", "icon": "sum", "order": 50, "view": "tree" }
+    ],
+    "statusItems": [{ "id": "example.stats.count", "order": 10 }],
+    "settings": {
+      "title": "Project Stats",
+      "properties": {
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["node_modules", "vendor", "dist", "build", "target"],
+          "maxLength": 100,
+          "title": "Skipped folders",
+          "description": "Folder names never counted, one per line. Hidden folders are skipped unless Count hidden files is on."
+        },
+        "topFiles": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 10,
+          "title": "Largest files per type",
+          "description": "How many of the largest files the panel lists under each file type."
+        },
+        "countHidden": {
+          "type": "boolean",
+          "default": false,
+          "title": "Count hidden files",
+          "description": "Also count files and folders whose names start with a dot."
+        },
+        "sortBy": {
+          "type": "string",
+          "enum": ["count", "size"],
+          "default": "count",
+          "title": "Sort file types by",
+          "description": "count: most files first; size: most bytes first."
+        }
+      }
+    },
+    "agentTools": [
+      {
+        "name": "summary",
+        "title": "Project file statistics",
+        "description": "Number of files and bytes per file type in the project, with the largest files. Use it to get a feel for an unfamiliar repository.",
+        "inputSchema": {
+          "type": "object",
+          "properties": { "top": { "type": "integer", "description": "How many file types to list (default 15)." } }
+        }
+      }
+    ]
+  }
+}
