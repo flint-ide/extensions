@@ -37,6 +37,16 @@ Run in the extension's folder (CI runs the same for every module):
 gofmt -l . && go vet ./... && go build -o /dev/null . && go test ./...
 ```
 
+Then check it against the contract with Flint's own checker, the `contract` job of CI. The checker uses Flint's manifest and host code: it validates the manifest and the webview files, starts the program, resolves every declarative panel, sends each webview a request, lists the agent tools and checks for a clean shutdown. Build the program first, under the name in `run.command`:
+
+```bash
+go build -o <run.command> .
+git clone https://github.com/flint-ide/flint ../flint   # once
+(cd ../flint && go run ./cmd/flint-extcheck "$OLDPWD")
+```
+
+CI also runs it every day against Flint's `main`, so a contract change in Flint that breaks an extension shows up here. An extension that needs an unreleased contract fails this job until that Flint change is merged; say so in the pull request.
+
 Add tests for every request the extension answers (see `notes/main_test.go`: requests, notifications sent, calls to Flint answered by the test). Test concurrency with `go test -race`.
 
 ## Git

@@ -14,6 +14,9 @@ How extensions work, the manifest and every protocol message are documented in t
 |---|---|---|
 | [`stats`](stats) | Project Stats | Counts the files of the open projects by type: a panel, a status bar item and an agent tool. Also the example in Flint's docs. |
 | [`notes`](notes) | Notes | Notes in a panel and tabs drawn by the extension's own HTML: the example of webviews (panels and tab views, the `window.flint` bridge, session restore). |
+| [`docker`](docker) | Docker | Containers of the Docker Engine grouped by Compose project: start, stop, restart, remove, compose up/down/pull, logs and shells in terminal tabs. Replaces Flint's built-in Docker panel. |
+| [`kubernetes`](kubernetes) | Kubernetes | Clusters through kubectl in its own webview: apps with health, workloads, pods, services, jobs, rollouts, scaling, logs and shells, diagnosis for agents and the `kubernetes_status` agent tool. Replaces Flint's built-in Kubernetes panel. |
+| [`aws`](aws) | AWS Profiles | The AWS CLI profiles with their credentials: log in (SSO, saml2aws), refresh, check identity, terminals as a profile. Replaces Flint's built-in AWS Profiles panel. |
 
 ## Install one
 
@@ -32,7 +35,7 @@ Then in Flint run **Install Extension from Folder…** from the command palette 
 - Go extensions are their own module (`go.mod` in the folder) and use only the standard library, like Flint itself.
 - Declare only the permissions the extension uses, and describe in the manifest what it does with them.
 - No telemetry, no network access the user doesn't ask for, and secrets only through Flint's `secrets/*` methods (the system keyring), never in settings or files.
-- CI checks that every extension has a manifest with the required fields and a README, and vets, builds and tests every Go module. Add a line to the table above.
+- CI checks that every extension has a manifest with the required fields and a README, vets, builds and tests every Go module, and runs **Flint's own contract checker** (`cmd/flint-extcheck` in the Flint repository) on every extension: manifest and webview rules, a start of the program, every panel resolved, a clean shutdown. It also runs daily against Flint's `main`. Add a line to the table above.
 
 ## License
 

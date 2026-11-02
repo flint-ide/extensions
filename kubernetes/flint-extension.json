@@ -1,0 +1,44 @@
+{
+  "contract": 1,
+  "id": "flint.kubernetes",
+  "name": "Kubernetes",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Kubernetes clusters through kubectl: any context of the kubeconfig without switching the global one, apps with their health, workloads, pods, services and jobs, actions, logs and shells in terminal tabs, and a status tool for agents.",
+  "run": { "command": "kubernetes-ext", "env": ["KUBECONFIG", "AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE", "AWS_PROFILE", "AWS_REGION", "AWS_DEFAULT_REGION", "AWS_CA_BUNDLE", "SAML2AWS_CONFIGFILE", "GOOGLE_APPLICATION_CREDENTIALS", "CLOUDSDK_CONFIG", "AZURE_CONFIG_DIR"] },
+  "activation": ["onView:flint.kubernetes.panel", "onCommand:flint.kubernetes.refresh", "onAgentTool:status"],
+  "permissions": ["terminal", "agent.ask"],
+  "contributes": {
+    "commands": [
+      { "id": "flint.kubernetes.refresh", "title": "Refresh", "category": "Kubernetes" }
+    ],
+    "panels": [
+      { "id": "flint.kubernetes.panel", "title": "Kubernetes", "icon": "helm", "order": 20, "view": "webview", "webview": { "html": "ui/panel.html" } }
+    ],
+    "settings": {
+      "title": "Kubernetes",
+      "properties": {
+        "refreshSeconds": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 600,
+          "default": 5,
+          "title": "Refresh every (seconds)",
+          "description": "How often the panel re-reads the shown namespace while it is visible."
+        }
+      }
+    },
+    "agentTools": [
+      {
+        "name": "status",
+        "title": "Kubernetes status",
+        "description": "What is unhealthy in a namespace of the kubeconfig's current context: apps with problems, workloads not rolled out, failing pods with their reason, failed jobs and recent warning events. Read-only; no secrets or logs.",
+        "inputSchema": {
+          "type": "object",
+          "properties": { "namespace": { "type": "string", "description": "Default: the current context's namespace." } },
+          "additionalProperties": false
+        }
+      }
+    ]
+  }
+}

@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Every day against Flint's main: a contract change in Flint that breaks an
+  # extension shows up here, not in a user's Settings ▸ Extensions.
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+    inputs:
+      flint-ref:
+        description: Flint branch, tag or commit to check against
+        default: main
 
 permissions:
   contents: read
@@ -57,3 +66,39 @@ jobs:
             (cd "$dir" && go vet ./... && go build -o /dev/null . && go test ./...) || status=1
           done
           exit $status
+
+  contract:
+    name: Extension contract (Flint's own checker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: flint-ide/flint
+          ref: ${{ inputs.flint-ref || 'main' }}
+          path: .flint
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27'
+          cache: false
+
+      # The checker is Flint's manifest and host code: the same rules and the
+      # same process handling as in the app (cmd/flint-extcheck).
+      - name: Build Flint's extension checker
+        run: cd .flint && go build -o "$RUNNER_TEMP/flint-extcheck" ./cmd/flint-extcheck
+
+      - name: Build each extension's program
+        run: |
+          for m in */flint-extension.json; do
+            dir=$(dirname "$m")
+            cmd=$(jq -r '.run.command // empty' "$m")
+            if [ -n "$cmd" ] && [ -f "$dir/go.mod" ]; then
+              (cd "$dir" && go build -o "$cmd" .)
+            fi
+          done
+
+      - name: Check every extension against the contract
+        run: |
+          dirs=()
+          for m in */flint-extension.json; do dirs+=("$(dirname "$m")"); done
+          "$RUNNER_TEMP/flint-extcheck" "${dirs[@]}"
