@@ -21,6 +21,16 @@ If an extension needs something the contract doesn't offer, the change goes to F
 - `run.command` is a clean relative path inside the folder; the built binary is git-ignored (`.gitignore` in the folder).
 - Raise `version` with every user-visible change; raise `contract` only when Flint's contract major changes.
 
+## Themes
+
+A color theme is data: a folder with `flint-extension.json` (no `run`, no program, no `go.mod`) and a `README.md`. One extension may hold up to 50 themes (`contributes.themes`), for example a dark and a light variant.
+
+- Each theme is `{ "id": "<ext id>.<name>", "label", "base": "dark" | "light", "colors": { … }, "terminal"?: { … } }`.
+- `colors` keys are Flint's theme variables only (`--bg`, `--bg-sidebar`, `--bg-editor`, `--bg-raised`, `--bg-hover`, `--bg-active`, `--border`, `--fg`, `--fg-muted`, `--fg-faint`, `--fg-name`, `--accent`, `--accent-dim`, `--accent-fg`, `--danger`, `--warn`, `--info`, `--ok`, `--selection`, `--selection-match`, `--search-match`, `--active-line`, `--git-*`, `--diff-ins-bg`, `--diff-del-bg`, `--syn-*`; the list is `THEME_VARIABLES` in Flint's `frontend/src/lib/settings.ts`); values are hex colors. Unset variables come from `base`.
+- `terminal` sets xterm colors: `background`, `foreground`, `cursor`, `cursorAccent`, `selectionBackground` and the 16 ANSI names (`black` … `brightWhite`).
+- The README says where the palette comes from and its license when it is a port of someone else's theme.
+- The `contract` CI job checks every color with Flint's own rules (`settings.ValidateCustomTheme`).
+
 ## Code
 
 - Go extensions are their own module (`go.mod` in the folder, `module github.com/flint-ide/extensions/<name>`), standard library only unless a dependency is unavoidable and discussed first.
