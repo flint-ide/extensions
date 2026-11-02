@@ -35,7 +35,7 @@ Then in Flint run **Install Extension from Folder…** from the command palette 
 - Go extensions are their own module (`go.mod` in the folder) and use only the standard library, like Flint itself.
 - Declare only the permissions the extension uses, and describe in the manifest what it does with them.
 - No telemetry, no network access the user doesn't ask for, and secrets only through Flint's `secrets/*` methods (the system keyring), never in settings or files.
-- CI checks that every extension has a manifest with the required fields and a README, and vets, builds and tests every Go module. Add a line to the table above.
+- CI checks that every extension has a manifest with the required fields and a README, vets, builds and tests every Go module, and runs **Flint's own contract checker** (`cmd/flint-extcheck` in the Flint repository) on every extension: manifest and webview rules, a start of the program, every panel resolved, a clean shutdown. It also runs daily against Flint's `main`. Add a line to the table above.
 
 ## License
 
