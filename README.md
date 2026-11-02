@@ -31,6 +31,7 @@ Then in Flint run **Install Extension from Folder…** from the command palette 
 ## Add one
 
 - One folder per extension, named after it, with `flint-extension.json` at its root.
+- A **color theme** is an extension without a program: just the manifest with `contributes.themes` and a README (see Themes in [`CLAUDE.md`](CLAUDE.md)). Users pick it in **Settings ▸ Appearance ▸ Color theme**.
 - Every extension has a `README.md`: what it adds (panels, commands, status items, agent tools), its settings, its permissions and what it does with them (what it reads, whether it uses the network or stores anything), and how to build and install it. [`stats/README.md`](stats/README.md) is the model.
 - Go extensions are their own module (`go.mod` in the folder) and use only the standard library, like Flint itself.
 - Declare only the permissions the extension uses, and describe in the manifest what it does with them.
