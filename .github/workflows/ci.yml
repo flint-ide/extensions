@@ -34,6 +34,18 @@ jobs:
           done
           exit $status
 
+      - name: Every extension has a README
+        run: |
+          status=0
+          for m in */flint-extension.json; do
+            dir=$(dirname "$m")
+            if [ ! -s "$dir/README.md" ]; then
+              echo "::error file=$m::$dir has no README.md"
+              status=1
+            fi
+          done
+          exit $status
+
       - name: gofmt, vet and build every Go extension
         run: |
           status=0

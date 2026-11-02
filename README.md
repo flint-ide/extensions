@@ -27,10 +27,11 @@ Then in Flint run **Install Extension from Folder…** from the command palette 
 ## Add one
 
 - One folder per extension, named after it, with `flint-extension.json` at its root.
+- Every extension has a `README.md`: what it adds (panels, commands, status items, agent tools), its settings, its permissions and what it does with them (what it reads, whether it uses the network or stores anything), and how to build and install it. [`stats/README.md`](stats/README.md) is the model.
 - Go extensions are their own module (`go.mod` in the folder) and use only the standard library, like Flint itself.
 - Declare only the permissions the extension uses, and describe in the manifest what it does with them.
 - No telemetry, no network access the user doesn't ask for, and secrets only through Flint's `secrets/*` methods (the system keyring), never in settings or files.
-- CI checks every manifest and builds and vets every Go module; add a line to the table above.
+- CI checks that every extension has a manifest with the required fields and a README, and vets, builds and tests every Go module. Add a line to the table above.
 
 ## License
 
