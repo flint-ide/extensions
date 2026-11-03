@@ -1,0 +1,86 @@
+{
+  "contract": 1,
+  "id": "flint.ruby",
+  "name": "Ruby",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Ruby in the editor: highlighting, comments, and completion, go to definition and diagnostics through Ruby LSP or Solargraph.",
+  "contributes": {
+    "languages": [
+      {
+        "id": "ruby",
+        "label": "Ruby",
+        "extensions": [".rb", ".rake", ".gemspec", ".ru", ".erb"],
+        "filenames": ["Gemfile", "Rakefile", "Guardfile", "Podfile", "Brewfile", "Vagrantfile"],
+        "lineComment": "#",
+        "blockComment": ["=begin", "=end"],
+        "server": {
+          "candidates": [["ruby-lsp"], ["solargraph", "stdio"]],
+          "install": "gem install ruby-lsp   (or gem install solargraph)"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "=begin\\b", "token": "comment", "sol": true, "next": "blockComment" },
+              { "regex": "#.*", "token": "comment" },
+              { "regex": "\"", "token": "string", "push": "dstring" },
+              { "regex": "'(?:[^'\\\\]|\\\\.)*'?", "token": "string" },
+              { "regex": "`", "token": "string-2", "push": "backtick" },
+              { "regex": "%[qQwWiI]?\\{", "token": "string", "push": "percentBrace" },
+              { "regex": ":[A-Za-z_][A-Za-z0-9_]*[?!=]?", "token": "atom" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*:(?!:)", "token": "atom" },
+              { "regex": "\\b(?:def)\\b", "token": "keyword", "push": "defName" },
+              { "regex": "\\b(?:alias|and|begin|break|case|class|defined\\?|do|else|elsif|end|ensure|for|if|in|module|next|not|or|redo|rescue|retry|return|super|then|undef|unless|until|when|while|yield|__method__|__dir__)\\b", "token": "keyword" },
+              { "regex": "\\b(?:true|false|nil|self|__FILE__|__LINE__|__ENCODING__)\\b(?![?!])", "token": "atom" },
+              { "regex": "\\b(?:require|require_relative|include|extend|prepend|attr_reader|attr_writer|attr_accessor|private|protected|public|module_function|raise|puts|print|p|lambda|proc|loop)\\b", "token": "builtin" },
+              { "regex": "@@?[A-Za-z_][A-Za-z0-9_]*", "token": "variable-2" },
+              { "regex": "\\$[A-Za-z_][A-Za-z0-9_]*|\\$[0-9!@&`'+~=/\\\\,;.<>_*$?:\"]", "token": "variable-3" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "0[xX][0-9a-fA-F_]+|0[bB][01_]+|0[oO]?[0-7_]+|\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:[eE][+-]?\\d+)?r?i?", "token": "number" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*[?!]?", "token": "variable" },
+              { "regex": "\\*\\*|<=>|===?|!=|=~|!~|<<|>>|&&|\\|\\||\\.\\.\\.?|::|->|[-+*/%<>=!&|^~?]", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;.]", "token": "punctuation" }
+            ],
+            "blockComment": [
+              { "regex": "=end\\b.*", "token": "comment", "sol": true, "next": "start" },
+              { "regex": ".+", "token": "comment" }
+            ],
+            "defName": [
+              { "regex": "\\s+", "token": null },
+              { "regex": "self\\.", "token": "atom" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*[?!=]?|\\[\\]=?|[-+*/%<>=!~^&|]+", "token": "def", "pop": true },
+              { "regex": ".", "token": null, "pop": true }
+            ],
+            "dstring": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "#\\{", "token": "meta", "push": "interpolation" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\#]+|#", "token": "string" }
+            ],
+            "backtick": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "#\\{", "token": "meta", "push": "interpolation" },
+              { "regex": "`", "token": "string-2", "pop": true },
+              { "regex": "[^`\\\\#]+|#", "token": "string-2" }
+            ],
+            "percentBrace": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "\\}", "token": "string", "pop": true },
+              { "regex": "[^}\\\\]+", "token": "string" }
+            ],
+            "interpolation": [
+              { "regex": "\\}", "token": "meta", "pop": true },
+              { "regex": "\"(?:[^\"\\\\]|\\\\.)*\"", "token": "string" },
+              { "regex": "@@?[A-Za-z_][A-Za-z0-9_]*", "token": "variable-2" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "\\d+", "token": "number" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*[?!]?", "token": "variable" },
+              { "regex": "[^}\"@A-Za-z_\\d]+", "token": null }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
