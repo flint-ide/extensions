@@ -26,13 +26,19 @@ How extensions work, the manifest and every protocol message are documented in t
 
 ## Install one
 
-Each extension is a folder with a `flint-extension.json` manifest and the program it names. To install `stats`:
+**From the extension index (prebuilt).** In Flint, open **Settings ▸ Extensions ▸ Extension index** and click **Browse Extensions**, then **Install…** on an extension. Flint downloads the signed index this repository publishes with each [release](../../releases), checks its signature, downloads the archive for your platform, checks it against the index and shows the extension's program and permissions before installing. **Check for Updates** there offers **Update to x.y.z…** when a newer version was released. Flint contacts the index only when you click.
+
+This needs a Flint with the extension index ([format](https://github.com/flint-ide/flint/blob/main/site/extensions/index-format.md)) and the index's public key built in. The key pair is not generated yet: until a maintainer sets the `FLINT_EXTINDEX_KEY` secret here (see [Releases](#releases)) and adds the public key to Flint, no index is published and Flint says the index is not configured. Use one of the other two ways meanwhile.
+
+**From this repository.** **Settings ▸ Extensions ▸ Repository** lists the extensions here and builds a Go extension on your machine when you click **Install…** (needs `git` and Go).
+
+**From a folder.** Each extension is a folder with a `flint-extension.json` manifest and the program it names. To install `stats`:
 
 ```bash
 cd stats && go build -o stats .
 ```
 
-Then in Flint run **Install Extension from Folder…** from the command palette and pick the `stats` folder. Flint shows the extension's program and permissions before copying it to its config folder. Manage it in **Settings ▸ Extensions**.
+Then in Flint run **Install Extension from Folder…** from the command palette and pick the `stats` folder, or run `flint --install-extension stats` in a terminal. Flint shows the extension's program and permissions before copying it to its config folder. Manage it in **Settings ▸ Extensions**.
 
 ## Add one
 
@@ -43,6 +49,24 @@ Then in Flint run **Install Extension from Folder…** from the command palette 
 - Declare only the permissions the extension uses, and describe in the manifest what it does with them.
 - No telemetry, no network access the user doesn't ask for, and secrets only through Flint's `secrets/*` methods (the system keyring), never in settings or files.
 - CI checks that every extension has a manifest with the required fields and a README, vets, builds and tests every Go module, and runs **Flint's own contract checker** (`cmd/flint-extcheck` in the Flint repository) on every extension: manifest and webview rules, a start of the program, every panel resolved, a clean shutdown. It also runs daily against Flint's `main`. Add a line to the table above.
+
+## Releases
+
+The [Release workflow](.github/workflows/release.yml) publishes what Flint's **Extension index** installs from. It runs when a tag `v*` is pushed, or by hand (**Actions ▸ Release ▸ Run workflow**, with the tag to publish). It:
+
+1. builds every Go extension for `darwin-arm64`, `darwin-amd64`, `linux-amd64` and `linux-arm64` (`CGO_ENABLED=0`, the program named as `run.command` says);
+2. packs each extension as a `.tar.gz`, one per platform for a program and one (`any`) for themes and languages;
+3. writes `index.json` and signs it (`index.json.sig`) with `cmd/flint-extindex` from a Flint checkout, the same code Flint verifies with;
+4. verifies the signature and every archive, then uploads the archives, `index.json` and `index.json.sig` as the release's assets. Flint reads `releases/latest/download/index.json`.
+
+Setup, once, by a maintainer:
+
+- In a Flint checkout run `go run ./cmd/flint-extindex keygen`. Store the **secret key** as this repository's Actions secret **`FLINT_EXTINDEX_KEY`** and nowhere else; put the **public key** into Flint (`OfficialPublicKey` in `internal/extensions/index/sign.go`).
+- Optionally set the repository variable `FLINT_EXTINDEX_PUBLIC_KEY` to that public key: the workflow then checks the signature against the key Flint has before uploading.
+
+Without the secret the workflow fails in its first step, with a message that says so, and publishes nothing: an unsigned index is never uploaded. The workflow needs a Flint that has `cmd/flint-extindex` (the extension index change in flint-ide/flint); until that is merged, run it with the **flint-ref** input set to that branch.
+
+To release an extension's update, raise `version` in its manifest and merge; the next release carries it.
 
 ## License
 

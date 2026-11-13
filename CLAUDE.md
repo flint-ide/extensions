@@ -59,6 +59,16 @@ CI also runs it every day against Flint's `main`, so a contract change in Flint 
 
 Add tests for every request the extension answers (see `notes/main_test.go`: requests, notifications sent, calls to Flint answered by the test). Test concurrency with `go test -race`.
 
+## Releases
+
+`.github/workflows/release.yml` publishes the signed extension index Flint installs from (Flint: `site/extensions/index-format.md`): on a tag `v*` or by hand, it builds every Go extension for the four platforms (`darwin-arm64`, `darwin-amd64`, `linux-amd64`, `linux-arm64`), packs every extension, and runs Flint's `cmd/flint-extindex build`, `sign` and `verify` from a Flint checkout, then uploads the archives, `index.json` and `index.json.sig` as release assets.
+
+- The signing key is the Actions secret `FLINT_EXTINDEX_KEY`. Never print it, commit it, pass it on a command line or write it to a file; the workflow hands it to `flint-extindex sign` through the environment only. Never weaken the first step: without the secret nothing is built or published.
+- Never generate a key in a workflow or commit one as "the official key": the maintainer generates the pair once.
+- An archive holds the extension's files without Go sources, plus the program named as `run.command`. An extension must build with `CGO_ENABLED=0` for all four platforms; keep platform-specific code behind build tags.
+- What users are offered as an update is decided by `version` in the manifest: raise it with every user-visible change, and keep permissions and agent tools minimal, because Flint lists every added one in the update confirmation.
+- The index format and the tool live in Flint. A change to either goes to Flint first.
+
 ## Git
 
 - Work on a branch and open a pull request; never push to `main`.
