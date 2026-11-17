@@ -1,0 +1,106 @@
+{
+  "contract": 1,
+  "id": "flint.lua",
+  "name": "Lua",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Lua in the editor: highlighting, comments, completion, go to definition and diagnostics through lua-language-server, and tests with Busted.",
+  "contributes": {
+    "languages": [
+      {
+        "id": "lua",
+        "label": "Lua",
+        "extensions": [".lua", ".rockspec"],
+        "filenames": [".luacheckrc"],
+        "lineComment": "--",
+        "blockComment": ["--[[", "]]"],
+        "server": {
+          "candidates": [["lua-language-server"]],
+          "install": "brew install lua-language-server   (or see https://luals.github.io/#install)"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "#!.*", "token": "meta", "sol": true },
+              { "regex": "--\\[\\[", "token": "comment", "push": "blockComment" },
+              { "regex": "--\\[=\\[", "token": "comment", "push": "blockComment1" },
+              { "regex": "--\\[==\\[", "token": "comment", "push": "blockComment2" },
+              { "regex": "--.*", "token": "comment" },
+              { "regex": "\\[\\[", "token": "string", "push": "longString" },
+              { "regex": "\\[=\\[", "token": "string", "push": "longString1" },
+              { "regex": "\\[==\\[", "token": "string", "push": "longString2" },
+              { "regex": "\"(?=(?:[^\"\\\\]|\\\\.)*\")", "token": "string", "push": "dstring" },
+              { "regex": "'(?=(?:[^'\\\\]|\\\\.)*')", "token": "string", "push": "sstring" },
+              { "regex": "\"(?:[^\"\\\\]|\\\\.)*\\\\?", "token": "string" },
+              { "regex": "'(?:[^'\\\\]|\\\\.)*\\\\?", "token": "string" },
+              { "regex": "::[A-Za-z_][A-Za-z0-9_]*::", "token": "meta" },
+              { "regex": "<(?:const|close)>", "token": "meta" },
+              { "regex": "\\bfunction\\b", "token": "keyword", "push": "funcName" },
+              { "regex": "\\b(?:and|break|do|else|elseif|end|for|goto|if|in|local|not|or|repeat|return|then|until|while)\\b", "token": "keyword" },
+              { "regex": "\\b(?:true|false|nil|self)\\b", "token": "atom" },
+              { "regex": "\\b(?:assert|collectgarbage|dofile|error|getmetatable|ipairs|load|loadfile|loadstring|next|pairs|pcall|print|rawequal|rawget|rawlen|rawset|require|select|setmetatable|tonumber|tostring|type|unpack|xpcall|coroutine|debug|io|math|os|package|string|table|utf8|_G|_ENV|_VERSION)\\b", "token": "builtin" },
+              { "regex": "0[xX](?:[0-9a-fA-F]+\\.?[0-9a-fA-F]*|\\.[0-9a-fA-F]+)(?:[pP][+-]?\\d+)?", "token": "number" },
+              { "regex": "(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?", "token": "number" },
+              { "regex": "[.:][A-Za-z_][A-Za-z0-9_]*", "token": "property" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "variable" },
+              { "regex": "\\.\\.\\.?|==|~=|<=|>=|<<|>>|//|[-+*/%^#&~|<>=]", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;.:]", "token": "punctuation" }
+            ],
+            "funcName": [
+              { "regex": "\\s+" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*(?=\\s*[.:])", "token": "variable" },
+              { "regex": "[.:]", "token": "punctuation" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "def", "pop": true },
+              { "regex": "\\(", "token": "bracket", "pop": true },
+              { "regex": ".", "pop": true }
+            ],
+            "dstring": [
+              { "regex": "\\\\(?:x[0-9a-fA-F]{2}|u\\{[0-9a-fA-F]+\\}|\\d{1,3}|.)", "token": "string-2" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\]+|\\\\", "token": "string" }
+            ],
+            "sstring": [
+              { "regex": "\\\\(?:x[0-9a-fA-F]{2}|u\\{[0-9a-fA-F]+\\}|\\d{1,3}|.)", "token": "string-2" },
+              { "regex": "'", "token": "string", "pop": true },
+              { "regex": "[^'\\\\]+|\\\\", "token": "string" }
+            ],
+            "blockComment": [
+              { "regex": ".*?\\]\\]", "token": "comment", "pop": true },
+              { "regex": ".+", "token": "comment" }
+            ],
+            "blockComment1": [
+              { "regex": ".*?\\]=\\]", "token": "comment", "pop": true },
+              { "regex": ".+", "token": "comment" }
+            ],
+            "blockComment2": [
+              { "regex": ".*?\\]==\\]", "token": "comment", "pop": true },
+              { "regex": ".+", "token": "comment" }
+            ],
+            "longString": [
+              { "regex": ".*?\\]\\]", "token": "string", "pop": true },
+              { "regex": ".+", "token": "string" }
+            ],
+            "longString1": [
+              { "regex": ".*?\\]=\\]", "token": "string", "pop": true },
+              { "regex": ".+", "token": "string" }
+            ],
+            "longString2": [
+              { "regex": ".*?\\]==\\]", "token": "string", "pop": true },
+              { "regex": ".+", "token": "string" }
+            ]
+          }
+        }
+      }
+    ],
+    "testRunners": [
+      {
+        "id": "busted",
+        "label": "Busted",
+        "languages": ["lua"],
+        "command": ["busted", "-o", "TAP", "${file}"],
+        "format": "tap"
+      }
+    ]
+  }
+}
