@@ -1,0 +1,108 @@
+{
+  "contract": 1,
+  "id": "flint.php",
+  "name": "PHP",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "PHP in the editor: highlighting, comments, completion, go to definition and diagnostics through Intelephense or Phpactor, and PHPUnit for Run Tests in File.",
+  "contributes": {
+    "languages": [
+      {
+        "id": "php",
+        "label": "PHP",
+        "extensions": [".php", ".phtml"],
+        "lineComment": "//",
+        "blockComment": ["/*", "*/"],
+        "server": {
+          "candidates": [["intelephense", "--stdio"], ["phpactor", "language-server"]],
+          "install": "npm install -g intelephense   (or install Phpactor: https://phpactor.readthedocs.io)"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "<\\?(?:php\\b|=|(?=\\s|$))", "token": "meta", "next": "php" },
+              { "regex": "<!--.*?(?:-->|$)", "token": "comment" },
+              { "regex": "</?[A-Za-z][A-Za-z0-9:-]*", "token": "tag" },
+              { "regex": "[^<]+" },
+              { "regex": "<" }
+            ],
+            "php": [
+              { "regex": "\\s+" },
+              { "regex": "\\?>", "token": "meta", "next": "start" },
+              { "regex": "/\\*", "token": "comment", "push": "blockComment" },
+              { "regex": "#\\[", "token": "meta" },
+              { "regex": "(?://|#).*?(?=\\?>|$)", "token": "comment" },
+              { "regex": "\"", "token": "string", "push": "dstring" },
+              { "regex": "'", "token": "string", "push": "sstring" },
+              { "regex": "<<<[ \\t]*[\"']?[A-Za-z_][A-Za-z0-9_]*[\"']?", "token": "string", "push": "heredoc" },
+              { "regex": "::class\\b", "token": "keyword" },
+              { "regex": "\\b(?:function|class|interface|trait|enum)\\b", "token": "keyword", "push": "defName" },
+              { "regex": "\\b(?:abstract|and|as|break|case|catch|clone|const|continue|declare|default|do|echo|else|elseif|empty|enddeclare|endfor|endforeach|endif|endswitch|endwhile|extends|final|finally|fn|for|foreach|global|goto|if|implements|include|include_once|instanceof|insteadof|isset|list|match|namespace|new|or|print|private|protected|public|readonly|require|require_once|return|static|switch|throw|try|unset|use|var|while|xor|yield)\\b", "token": "keyword" },
+              { "regex": "\\b(?:true|false|null|TRUE|FALSE|NULL|__(?:CLASS|DIR|FILE|FUNCTION|LINE|METHOD|NAMESPACE|TRAIT)__)\\b", "token": "atom" },
+              { "regex": "\\((?:int|integer|float|double|bool|boolean|string|array|object)\\)", "token": "type" },
+              { "regex": "\\b(?:int|float|bool|string|array|object|callable|iterable|void|never|mixed)\\b", "token": "type" },
+              { "regex": "\\b(?:self|parent)\\b", "token": "variable-2" },
+              { "regex": "\\b(?:die|exit|eval|define|defined|var_dump|print_r|sprintf|printf|count|is_null|array_map|array_filter|in_array)\\b", "token": "builtin" },
+              { "regex": "\\$this\\b", "token": "variable-2" },
+              { "regex": "\\$+[A-Za-z_][A-Za-z0-9_]*", "token": "variable" },
+              { "regex": "\\??->", "token": "operator", "push": "member" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "0[xX][0-9a-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|\\.\\d[\\d_]*(?:[eE][+-]?\\d+)?|\\d[\\d_]*(?:\\.(?:\\d[\\d_]*)?)?(?:[eE][+-]?\\d+)?", "token": "number" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "variable" },
+              { "regex": "\\*\\*=?|\\?\\?=?|=>|::|<=>|===?|!==?|<<=?|>>=?|\\+\\+|--|&&|\\|\\||\\.\\.\\.|[-+*/%.<>=!&|^~?:@]=?", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;\\\\]", "token": "punctuation" }
+            ],
+            "blockComment": [
+              { "regex": ".*?\\*/", "token": "comment", "pop": true },
+              { "regex": ".+", "token": "comment" }
+            ],
+            "defName": [
+              { "regex": "\\s+" },
+              { "regex": "&", "token": "operator" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "def", "pop": true },
+              { "regex": "[(]", "token": "bracket", "pop": true },
+              { "regex": "[^\\s(&A-Za-z_]", "pop": true }
+            ],
+            "member": [
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "property", "pop": true },
+              { "regex": "\\$[A-Za-z_][A-Za-z0-9_]*", "token": "variable", "pop": true },
+              { "regex": "[{]", "token": "bracket", "pop": true },
+              { "regex": "[^A-Za-z_${]", "pop": true }
+            ],
+            "dstring": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "\\{\\$[^}]*\\}", "token": "variable-2" },
+              { "regex": "\\$[A-Za-z_][A-Za-z0-9_]*(?:->[A-Za-z_][A-Za-z0-9_]*)?", "token": "variable-2" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\${]+", "token": "string" },
+              { "regex": "[${]", "token": "string" }
+            ],
+            "sstring": [
+              { "regex": "\\\\[\\\\']", "token": "string-2" },
+              { "regex": "'", "token": "string", "pop": true },
+              { "regex": "[^'\\\\]+|\\\\", "token": "string" }
+            ],
+            "heredoc": [
+              { "regex": "[ \\t]*[A-Z_][A-Z0-9_]*\\b(?=[ \\t]*(?:[;,)\\]]|$))", "token": "string", "sol": true, "pop": true },
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "\\{\\$[^}]*\\}", "token": "variable-2" },
+              { "regex": "\\$[A-Za-z_][A-Za-z0-9_]*", "token": "variable-2" },
+              { "regex": "[^\\\\${]+", "token": "string" },
+              { "regex": "[\\\\${]", "token": "string" }
+            ]
+          }
+        }
+      }
+    ],
+    "testRunners": [
+      {
+        "id": "phpunit",
+        "label": "PHPUnit",
+        "languages": ["php"],
+        "command": ["php", "vendor/bin/phpunit", "${file}"],
+        "format": "plain"
+      }
+    ]
+  }
+}
