@@ -1,0 +1,105 @@
+{
+  "contract": 1,
+  "id": "flint.kotlin",
+  "name": "Kotlin",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Kotlin in the editor: highlighting, comments, and completion, go to definition and diagnostics through Kotlin Language Server or JetBrains' kotlin-lsp.",
+  "contributes": {
+    "languages": [
+      {
+        "id": "kotlin",
+        "label": "Kotlin",
+        "extensions": [".kt", ".kts"],
+        "lineComment": "//",
+        "blockComment": ["/*", "*/"],
+        "server": {
+          "candidates": [["kotlin-language-server"], ["kotlin-lsp", "--stdio"]],
+          "install": "brew install kotlin-language-server   (or brew install JetBrains/utils/kotlin-lsp)"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "#!.*", "token": "comment", "sol": true },
+              { "regex": "/\\*", "token": "comment", "push": "blockComment" },
+              { "regex": "//.*", "token": "comment" },
+              { "regex": "\"\"\"", "token": "string", "push": "rawString" },
+              { "regex": "\"", "token": "string", "push": "dstring" },
+              { "regex": "'(?:\\\\u[0-9a-fA-F]{4}|\\\\.|[^'\\\\])'", "token": "string" },
+              { "regex": "@[A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z_][A-Za-z0-9_]*)?", "token": "meta" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*@(?![A-Za-z_])", "token": "meta" },
+              { "regex": "::class\\b", "token": "keyword" },
+              { "regex": "\\bfun\\b", "token": "keyword", "push": "funName" },
+              { "regex": "\\b(?:class|interface|object|typealias)\\b", "token": "keyword", "push": "typeName" },
+              { "regex": "\\b(?:val|var)\\b", "token": "keyword", "push": "varName" },
+              { "regex": "\\b(?:as|break|continue|do|else|for|if|in|is|package|import|return|throw|try|catch|finally|when|while|typeof|by|constructor|init|where|out|vararg|abstract|actual|annotation|companion|const|crossinline|data|enum|expect|external|final|infix|inline|inner|internal|lateinit|noinline|open|operator|override|private|protected|public|reified|sealed|suspend|tailrec)\\b", "token": "keyword" },
+              { "regex": "\\b(?:true|false|null|this|super)\\b", "token": "atom" },
+              { "regex": "\\b(?:println|print|readln|readLine|listOf|listOfNotNull|mutableListOf|arrayListOf|mapOf|mutableMapOf|hashMapOf|setOf|mutableSetOf|hashSetOf|arrayOf|intArrayOf|emptyList|emptyMap|emptySet|sequenceOf|buildList|buildMap|buildString|require|requireNotNull|check|checkNotNull|error|TODO|lazy|run|with|apply|also|let|takeIf|takeUnless|repeat|maxOf|minOf)\\b", "token": "builtin" },
+              { "regex": "\\bit\\b", "token": "variable-2" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "0[xX][0-9a-fA-F_]+(?:[uU]?L)?|0[bB][01_]+(?:[uU]?L)?|(?:\\d[\\d_]*)?\\.\\d[\\d_]*(?:[eE][+-]?\\d[\\d_]*)?[fF]?|\\d[\\d_]*(?:[eE][+-]?\\d[\\d_]*)?(?:[fF]|[uU]?L|[uU])?", "token": "number" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "variable" },
+              { "regex": "`[^`]+`", "token": "variable" },
+              { "regex": "\\?\\.|\\?:|!!|::|\\.\\.<?|->|===?|!==?|<=|>=|&&|\\|\\||\\+\\+|--|[-+*/%]=?|[<>=!?:&|^~]", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;.]", "token": "punctuation" }
+            ],
+            "blockComment": [
+              { "regex": "\\*/", "token": "comment", "pop": true },
+              { "regex": "/\\*", "token": "comment", "push": "blockComment" },
+              { "regex": "@[a-zA-Z]+", "token": "meta" },
+              { "regex": "[^*/@]+", "token": "comment" },
+              { "regex": "[*/@]", "token": "comment" }
+            ],
+            "funName": [
+              { "regex": "\\s+" },
+              { "regex": "<[^>]*>+" },
+              { "regex": "[A-Z][A-Za-z0-9_]*(?:<[^>]*>+)?\\??\\.", "token": "type" },
+              { "regex": "`[^`]+`", "token": "def", "pop": true },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "def", "pop": true },
+              { "regex": ".", "pop": true }
+            ],
+            "typeName": [
+              { "regex": "\\s+" },
+              { "regex": "`[^`]+`", "token": "def", "pop": true },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "def", "pop": true },
+              { "regex": ".", "pop": true }
+            ],
+            "varName": [
+              { "regex": "\\s+" },
+              { "regex": "`[^`]+`", "token": "def", "pop": true },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "def", "pop": true },
+              { "regex": ".", "pop": true }
+            ],
+            "dstring": [
+              { "regex": "\\\\u[0-9a-fA-F]{4}|\\\\.", "token": "string-2" },
+              { "regex": "\\$\\{", "token": "meta", "push": "template" },
+              { "regex": "\\$[A-Za-z_][A-Za-z0-9_]*", "token": "variable-2" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\$]+|\\$", "token": "string" }
+            ],
+            "rawString": [
+              { "regex": "\\$\\{", "token": "meta", "push": "template" },
+              { "regex": "\\$[A-Za-z_][A-Za-z0-9_]*", "token": "variable-2" },
+              { "regex": "\"\"\"\"*", "token": "string", "pop": true },
+              { "regex": "[^\"$]+|[\"$]", "token": "string" }
+            ],
+            "template": [
+              { "regex": "\\}", "token": "meta", "pop": true },
+              { "regex": "\\{", "token": "bracket", "push": "template" },
+              { "regex": "\"", "token": "string", "push": "dstring" },
+              { "regex": "'(?:[^'\\\\]|\\\\.)*'", "token": "string" },
+              { "regex": "\\b(?:if|else|when|is|in|as)\\b", "token": "keyword" },
+              { "regex": "\\b(?:true|false|null|this|it)\\b", "token": "atom" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "\\d[\\d_]*(?:\\.\\d+)?[fFL]?", "token": "number" },
+              { "regex": "[A-Za-z_][A-Za-z0-9_]*", "token": "variable" },
+              { "regex": "\\?\\.|\\?:|!!|::|->|[-+*/%<>=!?:&|.]", "token": "operator" },
+              { "regex": "[^{}\"'A-Za-z_\\d]+" }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
