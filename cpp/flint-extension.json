@@ -1,0 +1,138 @@
+{
+  "contract": 1,
+  "id": "flint.cpp",
+  "name": "C and C++",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "C and C++ in the editor: highlighting, comments, and completion, go to definition and diagnostics through clangd.",
+  "contributes": {
+    "languages": [
+      {
+        "id": "c",
+        "label": "C",
+        "extensions": [".c", ".i"],
+        "lineComment": "//",
+        "blockComment": ["/*", "*/"],
+        "server": {
+          "candidates": [["clangd"]],
+          "install": "xcode-select --install on macOS, apt install clangd on Debian/Ubuntu; see clangd.llvm.org/installation"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "//.*", "token": "comment" },
+              { "regex": "/\\*", "token": "comment", "push": "blockComment" },
+              { "regex": "#\\s*(?:include|include_next|embed)\\b", "token": "meta", "push": "include" },
+              { "regex": "#\\s*[A-Za-z_]\\w*", "token": "meta" },
+              { "regex": "##?", "token": "meta" },
+              { "regex": "(?:u8|u|U|L)?\"", "token": "string", "push": "string" },
+              { "regex": "(?:u8|u|U|L)?'(?:[^'\\\\]|\\\\.)*'", "token": "string-2" },
+              { "regex": "0[xX][0-9a-fA-F']+(?:\\.[0-9a-fA-F']*)?(?:[pP][+-]?\\d+)?[uUlL]*|0[bB][01']+[uUlL]*|(?:\\d[\\d']*\\.?[\\d']*|\\.\\d[\\d']*)(?:[eE][+-]?\\d+)?[fFlLuU]*", "token": "number" },
+              { "regex": "(?:struct|union|enum)\\b", "token": "keyword", "push": "defName" },
+              { "regex": "(?:break|case|continue|default|do|else|extern|for|goto|if|inline|register|restrict|return|sizeof|static|switch|typedef|while|const|volatile|auto|alignas|alignof|static_assert|thread_local|typeof|typeof_unqual|constexpr|_Alignas|_Alignof|_Atomic|_Generic|_Noreturn|_Static_assert|_Thread_local)\\b", "token": "keyword" },
+              { "regex": "(?:void|char|short|int|long|float|double|signed|unsigned|bool|_Bool|_Complex|_Imaginary|size_t|ssize_t|ptrdiff_t|intptr_t|uintptr_t|intmax_t|uintmax_t|u?int(?:8|16|32|64)_t|wchar_t|char8_t|char16_t|char32_t|FILE|va_list)\\b", "token": "type" },
+              { "regex": "(?:true|false|NULL|nullptr|EOF|stdin|stdout|stderr|__func__|__FILE__|__LINE__|__DATE__|__TIME__)\\b", "token": "atom" },
+              { "regex": "(?:printf|fprintf|sprintf|snprintf|scanf|puts|malloc|calloc|realloc|free|memcpy|memmove|memset|strlen|strcmp|assert|exit|abort)\\b", "token": "builtin" },
+              { "regex": "[A-Z][A-Z0-9_]+\\b", "token": "variable-3" },
+              { "regex": "[A-Z]\\w*", "token": "type" },
+              { "regex": "[A-Za-z_]\\w*", "token": "variable" },
+              { "regex": "->|<<=?|>>=?|\\+\\+|--|&&|\\|\\||\\.\\.\\.|[-+*/%&|^!=<>]=?|[~?:]", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;.]", "token": "punctuation" }
+            ],
+            "blockComment": [
+              { "regex": "\\*/", "token": "comment", "pop": true },
+              { "regex": "[^*]+", "token": "comment" },
+              { "regex": "\\*", "token": "comment" }
+            ],
+            "include": [
+              { "regex": "[ \\t]+", "token": null },
+              { "regex": "<[^>]*>", "token": "string", "pop": true },
+              { "regex": "\"[^\"]*\"", "token": "string", "pop": true },
+              { "regex": "[A-Za-z_]\\w*", "token": "variable-3", "pop": true },
+              { "regex": ".", "token": null, "pop": true }
+            ],
+            "defName": [
+              { "regex": "\\s+", "token": null },
+              { "regex": "[A-Za-z_]\\w*", "token": "def", "pop": true },
+              { "regex": "[{(\\[]", "token": "bracket", "pop": true },
+              { "regex": ".", "token": null, "pop": true }
+            ],
+            "string": [
+              { "regex": "\\\\(?:x[0-9a-fA-F]+|[0-7]{1,3}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|.|$)", "token": "string-2" },
+              { "regex": "%[-+ #0]*(?:\\d+|\\*)?(?:\\.(?:\\d+|\\*))?(?:hh|h|ll|l|j|z|t|L)?[diouxXeEfFgGaAcspn%]", "token": "string-2" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\%]+|%", "token": "string" }
+            ]
+          }
+        }
+      },
+      {
+        "id": "cpp",
+        "label": "C++",
+        "extensions": [".cpp", ".cc", ".cxx", ".c++", ".cppm", ".ccm", ".cxxm", ".ixx", ".h", ".hpp", ".hh", ".hxx", ".h++", ".inl", ".ipp", ".tpp", ".txx", ".ii"],
+        "lineComment": "//",
+        "blockComment": ["/*", "*/"],
+        "server": {
+          "candidates": [["clangd"]],
+          "install": "xcode-select --install on macOS, apt install clangd on Debian/Ubuntu; see clangd.llvm.org/installation"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "//.*", "token": "comment" },
+              { "regex": "/\\*", "token": "comment", "push": "blockComment" },
+              { "regex": "#\\s*(?:include|include_next|import|embed)\\b", "token": "meta", "push": "include" },
+              { "regex": "#\\s*[A-Za-z_]\\w*", "token": "meta" },
+              { "regex": "##?", "token": "meta" },
+              { "regex": "(?:u8|u|U|L)?R\"[^()\\\\\\s\"]{0,16}\\(", "token": "string", "push": "rawString" },
+              { "regex": "(?:u8|u|U|L)?\"", "token": "string", "push": "string" },
+              { "regex": "(?:u8|u|U|L)?'(?:[^'\\\\]|\\\\.)*'", "token": "string-2" },
+              { "regex": "0[xX][0-9a-fA-F']+(?:\\.[0-9a-fA-F']*)?(?:[pP][+-]?\\d+)?[uUlLzZ]*|0[bB][01']+[uUlLzZ]*|(?:\\d[\\d']*\\.?[\\d']*|\\.\\d[\\d']*)(?:[eE][+-]?\\d+)?[fFlLuUzZ]*", "token": "number" },
+              { "regex": "(?:class|struct|union|enum|namespace|concept)\\b", "token": "keyword", "push": "defName" },
+              { "regex": "(?:alignas|alignof|asm|auto|break|case|catch|co_await|co_return|co_yield|const|const_cast|consteval|constexpr|constinit|continue|decltype|default|delete|do|dynamic_cast|else|explicit|export|extern|final|for|friend|goto|if|import|inline|module|mutable|new|noexcept|operator|override|private|protected|public|register|reinterpret_cast|requires|return|sizeof|static|static_assert|static_cast|switch|template|thread_local|throw|try|typedef|typeid|typename|using|virtual|volatile|while)\\b", "token": "keyword" },
+              { "regex": "(?:void|bool|char|short|int|long|float|double|signed|unsigned|wchar_t|char8_t|char16_t|char32_t|size_t|ptrdiff_t|intptr_t|uintptr_t|u?int(?:8|16|32|64)_t|nullptr_t)\\b", "token": "type" },
+              { "regex": "(?:true|false|nullptr|this|NULL|__func__|__FILE__|__LINE__)\\b", "token": "atom" },
+              { "regex": "(?:std|string|string_view|vector|array|map|unordered_map|set|unordered_set|optional|variant|unique_ptr|shared_ptr|weak_ptr|make_unique|make_shared|move|forward|cout|cerr|endl|printf)\\b", "token": "builtin" },
+              { "regex": "[A-Z][A-Z0-9_]+\\b", "token": "variable-3" },
+              { "regex": "[A-Z]\\w*", "token": "type" },
+              { "regex": "[A-Za-z_]\\w*", "token": "variable" },
+              { "regex": "->\\*?|\\.\\*|::|<=>|<<=?|>>=?|\\+\\+|--|&&|\\|\\||\\.\\.\\.|[-+*/%&|^!=<>]=?|[~?:]", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;.]", "token": "punctuation" }
+            ],
+            "blockComment": [
+              { "regex": "\\*/", "token": "comment", "pop": true },
+              { "regex": "[^*]+", "token": "comment" },
+              { "regex": "\\*", "token": "comment" }
+            ],
+            "include": [
+              { "regex": "[ \\t]+", "token": null },
+              { "regex": "<[^>]*>", "token": "string", "pop": true },
+              { "regex": "\"[^\"]*\"", "token": "string", "pop": true },
+              { "regex": "[A-Za-z_]\\w*", "token": "variable-3", "pop": true },
+              { "regex": ".", "token": null, "pop": true }
+            ],
+            "defName": [
+              { "regex": "\\s+", "token": null },
+              { "regex": "(?:class|struct)\\b", "token": "keyword" },
+              { "regex": "[A-Za-z_]\\w*", "token": "def", "pop": true },
+              { "regex": "[{(\\[]", "token": "bracket", "pop": true },
+              { "regex": ".", "token": null, "pop": true }
+            ],
+            "string": [
+              { "regex": "\\\\(?:x[0-9a-fA-F]+|[0-7]{1,3}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|.|$)", "token": "string-2" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\]+", "token": "string" }
+            ],
+            "rawString": [
+              { "regex": "\\)[^()\\\\\\s\"]{0,16}\"", "token": "string", "pop": true },
+              { "regex": "[^)]+", "token": "string" },
+              { "regex": "\\)", "token": "string" }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
