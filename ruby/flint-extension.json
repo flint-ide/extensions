@@ -2,9 +2,9 @@
   "contract": 1,
   "id": "flint.ruby",
   "name": "Ruby",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "Flint",
-  "description": "Ruby in the editor: highlighting, comments, and completion, go to definition and diagnostics through Ruby LSP or Solargraph.",
+  "description": "Ruby in the editor: highlighting, comments, completion, go to definition and diagnostics through Ruby LSP or Solargraph, and Run Tests in File with RSpec.",
   "contributes": {
     "languages": [
       {
@@ -80,6 +80,15 @@
             ]
           }
         }
+      }
+    ],
+    "testRunners": [
+      {
+        "id": "rspec",
+        "label": "RSpec",
+        "languages": ["ruby"],
+        "command": ["bundle", "exec", "rspec", "${file}"],
+        "format": "plain"
       }
     ]
   }
