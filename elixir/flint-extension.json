@@ -1,0 +1,132 @@
+{
+  "contract": 1,
+  "id": "flint.elixir",
+  "name": "Elixir",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Elixir in the editor: highlighting, comments, completion and diagnostics through ElixirLS, Expert or Next LS, debugging through ElixirLS and mix test.",
+  "contributes": {
+    "languages": [
+      {
+        "id": "elixir",
+        "label": "Elixir",
+        "extensions": [".ex", ".exs"],
+        "lineComment": "#",
+        "server": {
+          "candidates": [["elixir-ls"], ["language_server.sh"], ["expert", "--stdio"], ["nextls", "--stdio"]],
+          "install": "brew install elixir-ls   (or install Expert or Next LS and put it on PATH)"
+        },
+        "grammar": {
+          "states": {
+            "start": [
+              { "regex": "#.*", "token": "comment" },
+              { "regex": "@(?:moduledoc|typedoc|doc)\\b", "token": "meta" },
+              { "regex": "~[A-Za-z]+\"\"\"", "token": "string", "push": "heredoc" },
+              { "regex": "~[A-Za-z]+\"(?:[^\"\\\\]|\\\\.)*\"[A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+'(?:[^'\\\\]|\\\\.)*'[A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+/(?:[^/\\\\]|\\\\.)*/[A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+\\|(?:[^|\\\\]|\\\\.)*\\|[A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+<(?:[^>\\\\]|\\\\.)*>[A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+\\x28(?:[^\\x29\\\\]|\\\\.)*\\x29[A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+\\[(?:[^\\]\\\\]|\\\\.)*\\][A-Za-z]*", "token": "string-2" },
+              { "regex": "~[A-Za-z]+\\{(?:[^\\x7d\\\\]|\\\\.)*\\x7d[A-Za-z]*", "token": "string-2" },
+              { "regex": "\"\"\"", "token": "string", "push": "heredoc" },
+              { "regex": "'''", "token": "string", "push": "charHeredoc" },
+              { "regex": "\"", "token": "string", "push": "dstring" },
+              { "regex": "'", "token": "string", "push": "charlist" },
+              { "regex": "::", "token": "operator" },
+              { "regex": ":\"(?:[^\"\\\\]|\\\\.)*\"", "token": "atom" },
+              { "regex": ":[A-Za-z_][A-Za-z0-9_@]*[?!]?", "token": "atom" },
+              { "regex": "[a-z_][A-Za-z0-9_]*[?!]?:(?!:)", "token": "atom" },
+              { "regex": "\\b(?:def|defp|defmacro|defmacrop|defguard|defguardp|defdelegate|defn|defnp)\\b", "token": "keyword", "push": "defName" },
+              { "regex": "\\b(?:defmodule|defprotocol|defimpl|defstruct|defexception|defoverridable|do|end|fn|case|cond|with|when|if|unless|else|try|catch|rescue|after|receive|for|in|not|and|or|quote|unquote|unquote_splicing|import|require|alias|use)\\b(?![?!:])", "token": "keyword" },
+              { "regex": "\\b(?:true|false|nil)\\b(?![?!])", "token": "atom" },
+              { "regex": "__(?:MODULE|DIR|ENV|CALLER|STACKTRACE)__", "token": "builtin" },
+              { "regex": "\\b(?:raise|reraise|throw|exit|send|spawn|spawn_link|self|super|is_nil|is_atom|is_binary|is_list|is_map|is_integer|is_function|is_tuple)\\b(?![?!:])", "token": "builtin" },
+              { "regex": "@[a-z_][A-Za-z0-9_]*", "token": "meta" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "0x[0-9a-fA-F_]+|0b[01_]+|0o[0-7_]+|\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:[eE][+-]?\\d+)?", "token": "number" },
+              { "regex": "\\?(?:\\\\.|[^\\s\\\\])", "token": "number" },
+              { "regex": "_[A-Za-z0-9_]*", "token": "variable-2" },
+              { "regex": "[a-z][A-Za-z0-9_]*[?!]?", "token": "variable" },
+              { "regex": "<<|>>", "token": "bracket" },
+              { "regex": "\\|>|<>|<-|->|=>|\\\\\\\\|\\+\\+|--|\\.\\.|===?|!==?|=~|<=|>=|&&|\\|\\||[-+*/<>=!&|^~%]", "token": "operator" },
+              { "regex": "[()\\[\\]{}]", "token": "bracket" },
+              { "regex": "[,;.]", "token": "punctuation" }
+            ],
+            "defName": [
+              { "regex": "\\s+" },
+              { "regex": "[a-z_][A-Za-z0-9_]*[?!]?", "token": "def", "pop": true },
+              { "regex": ".", "pop": true }
+            ],
+            "dstring": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "#\\{", "token": "meta", "push": "interpolation" },
+              { "regex": "\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\#]+|#", "token": "string" }
+            ],
+            "charlist": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "#\\{", "token": "meta", "push": "interpolation" },
+              { "regex": "'", "token": "string", "pop": true },
+              { "regex": "[^'\\\\#]+|#", "token": "string" }
+            ],
+            "heredoc": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "#\\{", "token": "meta", "push": "interpolation" },
+              { "regex": "\"\"\"", "token": "string", "pop": true },
+              { "regex": "[^\"\\\\#]+|[\"#]", "token": "string" }
+            ],
+            "charHeredoc": [
+              { "regex": "\\\\.", "token": "string-2" },
+              { "regex": "#\\{", "token": "meta", "push": "interpolation" },
+              { "regex": "'''", "token": "string", "pop": true },
+              { "regex": "[^'\\\\#]+|['#]", "token": "string" }
+            ],
+            "interpolation": [
+              { "regex": "\\}", "token": "meta", "pop": true },
+              { "regex": "\\{", "token": "bracket", "push": "interpolation" },
+              { "regex": "\"(?:[^\"\\\\]|\\\\.)*\"", "token": "string" },
+              { "regex": ":[A-Za-z_][A-Za-z0-9_]*[?!]?", "token": "atom" },
+              { "regex": "@[a-z_][A-Za-z0-9_]*", "token": "meta" },
+              { "regex": "[A-Z][A-Za-z0-9_]*", "token": "type" },
+              { "regex": "\\d[\\d_]*(?:\\.\\d+)?", "token": "number" },
+              { "regex": "[a-z_][A-Za-z0-9_]*[?!]?", "token": "variable" },
+              { "regex": "[^{}\"@:A-Za-z_\\d]+|:" }
+            ]
+          }
+        }
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "mix_task",
+        "label": "Elixir (ElixirLS)",
+        "languages": ["elixir"],
+        "adapter": {
+          "candidates": [["elixir-ls-debugger"], ["debug_adapter.sh"]],
+          "install": "brew install elixir-ls   (or put ElixirLS's debug_adapter.sh on PATH)"
+        },
+        "launch": {
+          "type": "mix_task",
+          "name": "mix test",
+          "request": "launch",
+          "task": "test",
+          "taskArgs": ["${file}"],
+          "startApps": true,
+          "projectDir": "${workspaceFolder}",
+          "requireFiles": ["test/**/test_helper.exs", "test/**/*_test.exs"]
+        }
+      }
+    ],
+    "testRunners": [
+      {
+        "id": "mix-test",
+        "label": "mix test",
+        "languages": ["elixir"],
+        "command": ["mix", "test", "${file}"],
+        "format": "plain"
+      }
+    ]
+  }
+}
