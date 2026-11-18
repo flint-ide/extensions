@@ -17,7 +17,16 @@ How extensions work, the manifest and every protocol message are documented in t
 | [`docker`](docker) | Docker | Containers of the Docker Engine grouped by Compose project: start, stop, restart, remove, compose up/down/pull, logs and shells in terminal tabs. Replaces Flint's built-in Docker panel. |
 | [`kubernetes`](kubernetes) | Kubernetes | Clusters through kubectl in its own webview: apps with health, workloads, pods, services, jobs, rollouts, scaling, logs and shells, diagnosis for agents and the `kubernetes_status` agent tool. Replaces Flint's built-in Kubernetes panel. |
 | [`aws`](aws) | AWS Profiles | The AWS CLI profiles with their credentials: log in (SSO, saml2aws), refresh, check identity, terminals as a profile. Replaces Flint's built-in AWS Profiles panel. |
-| [`ruby`](ruby) | Ruby | Ruby files: highlighting, comments, and completion, go to definition and diagnostics through Ruby LSP or Solargraph. A language is data: no program. |
+| [`ruby`](ruby) | Ruby | Ruby files: highlighting, comments, completion, go to definition and diagnostics through Ruby LSP or Solargraph, and Run Tests in File with RSpec. A language is data: no program. |
+| [`python`](python) | Python | Debug File with debugpy and Run Tests in File with pytest for Python, which Flint already highlights and serves itself. Data only: no program. |
+| [`rust`](rust) | Rust | Run Tests with `cargo test` (the whole package) for Rust, which Flint already serves itself. Data only: no program. |
+| [`cpp`](cpp) | C and C++ | C and C++ files: highlighting, comments, and completion, go to definition and diagnostics through clangd. Data only: no program. |
+| [`java`](java) | Java | Java files: highlighting, comments, and completion, go to definition and diagnostics through Eclipse JDT LS (`jdtls`). Data only: no program. |
+| [`csharp`](csharp) | C# | C# files: highlighting, comments, and completion, go to definition and diagnostics through csharp-ls or OmniSharp. Data only: no program. |
+| [`php`](php) | PHP | PHP files: highlighting, comments, a language server (Intelephense or Phpactor) and Run Tests in File with PHPUnit. Data only: no program. |
+| [`kotlin`](kotlin) | Kotlin | Kotlin files: highlighting, comments, and completion, go to definition and diagnostics through kotlin-language-server or kotlin-lsp. Data only: no program. |
+| [`lua`](lua) | Lua | Lua files: highlighting, comments, lua-language-server and Run Tests in File with busted (results for each test, from TAP). Data only: no program. |
+| [`elixir`](elixir) | Elixir | Elixir files: highlighting, comments, a language server (ElixirLS, Expert or Next LS), Debug File with ElixirLS's debug adapter and Run Tests in File with `mix test`. Data only: no program. |
 | [`flint-themes`](flint-themes) | Flint Themes | Flint's own color themes: Graphite (dark stone gray with a spark of orange) and Paper (warm light). |
 | [`catppuccin`](catppuccin) | Catppuccin | Color themes: Latte, Frappé, Macchiato, Mocha. |
 | [`tokyo-night`](tokyo-night) | Tokyo Night | Color themes: Night, Storm, Day. |

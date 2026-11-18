@@ -1,0 +1,19 @@
+{
+  "contract": 1,
+  "id": "flint.rust",
+  "name": "Rust",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Run a Rust project's tests with cargo test. Flint already highlights Rust and runs rust-analyzer; a debugger is not included because a launch needs the compiled binary's path.",
+  "contributes": {
+    "testRunners": [
+      {
+        "id": "cargo-test",
+        "label": "cargo test (whole package)",
+        "languages": ["rust"],
+        "command": ["cargo", "test"],
+        "format": "plain"
+      }
+    ]
+  }
+}

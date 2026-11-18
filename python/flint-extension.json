@@ -1,0 +1,38 @@
+{
+  "contract": 1,
+  "id": "flint.python",
+  "name": "Python",
+  "version": "0.1.0",
+  "publisher": "Flint",
+  "description": "Debug and test Python files: a debugger through debugpy and a test runner through pytest. Flint already highlights Python and runs its language server.",
+  "contributes": {
+    "debuggers": [
+      {
+        "type": "debugpy",
+        "label": "Python (debugpy)",
+        "languages": ["python"],
+        "adapter": {
+          "candidates": [["python3", "-m", "debugpy.adapter"], ["python", "-m", "debugpy.adapter"]],
+          "install": "python3 -m pip install debugpy"
+        },
+        "launch": {
+          "type": "debugpy",
+          "request": "launch",
+          "program": "${file}",
+          "cwd": "${workspaceFolder}",
+          "console": "internalConsole",
+          "justMyCode": true
+        }
+      }
+    ],
+    "testRunners": [
+      {
+        "id": "pytest",
+        "label": "pytest",
+        "languages": ["python"],
+        "command": ["python3", "-m", "pytest", "${file}"],
+        "format": "plain"
+      }
+    ]
+  }
+}
