@@ -1,0 +1,157 @@
+name: Release
+
+# Publishes the signed extension index Flint installs from (Settings ▸
+# Extensions ▸ Extension index): every Go extension built for the four
+# platforms, every extension packed, index.json written and signed with
+# Flint's own tool (cmd/flint-extindex in the Flint repository), and all of
+# it uploaded as the assets of a GitHub release. Flint reads
+# releases/latest/download/index.json and index.json.sig.
+#
+# Needs the repository secret FLINT_EXTINDEX_KEY: the Ed25519 secret key
+# printed by `go run ./cmd/flint-extindex keygen` (in a Flint checkout). Its
+# public key is the one built into Flint (index.OfficialPublicKey). Without
+# the secret this workflow fails in its first step and publishes nothing.
+# Optional repository variable FLINT_EXTINDEX_PUBLIC_KEY: that public key;
+# when set, the signature is checked against it before anything is uploaded,
+# so a wrong secret can't publish an index Flint would refuse.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish (created if it doesn't exist), for example v12
+        required: true
+      flint-ref:
+        description: Flint branch, tag or commit whose flint-extindex builds and signs the index
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, sign and publish the extension index
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release and upload its assets
+    env:
+      TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+    steps:
+      # First, before anything is built: no key, no release. An unsigned
+      # index is never published.
+      - name: The signing key is configured
+        env:
+          FLINT_EXTINDEX_KEY: ${{ secrets.FLINT_EXTINDEX_KEY }}
+        run: |
+          if [ -z "$FLINT_EXTINDEX_KEY" ]; then
+            echo "::error::The repository secret FLINT_EXTINDEX_KEY is not set, so the extension index can't be signed and nothing is published. Generate a key pair with 'go run ./cmd/flint-extindex keygen' in a Flint checkout, store the secret key as this secret, and build the public key into Flint (index.OfficialPublicKey)."
+            exit 1
+          fi
+          if ! printf '%s' "$TAG" | grep -Eq '^v[0-9A-Za-z][0-9A-Za-z._-]{0,63}$'; then
+            echo "::error::The release tag must look like v12 or v1.2.3 (got '$TAG')."
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: flint-ide/flint
+          ref: ${{ inputs.flint-ref || 'main' }}
+          path: .flint
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27'
+          cache: false
+
+      # The index tool is Flint's own code: the manifest rules, the archive
+      # format and the signature are the ones the app checks.
+      - name: Build Flint's index tool
+        run: cd .flint && go build -o "$RUNNER_TEMP/flint-extindex" ./cmd/flint-extindex
+
+      # A staging folder per extension and platform: the tracked files without
+      # the Go sources, plus the program, named as run.command says. An
+      # extension without a program (themes, languages) is staged once and
+      # packed as "any".
+      - name: Build every extension
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/stage"
+          : > "$RUNNER_TEMP/inputs.txt"
+          for m in */flint-extension.json; do
+            dir=$(dirname "$m")
+            cmd=$(jq -r '.run.command // empty' "$m")
+            if [ -z "$cmd" ]; then
+              mkdir -p "$stage/any/$dir"
+              tar -C "$dir" --exclude=.gitignore -cf - . | tar -C "$stage/any/$dir" -xf -
+              echo "$stage/any/$dir" >> "$RUNNER_TEMP/inputs.txt"
+              continue
+            fi
+            if [ ! -f "$dir/go.mod" ]; then
+              echo "::error file=$m::$dir has a program but no go.mod: this workflow builds Go extensions only"
+              exit 1
+            fi
+            for platform in darwin-arm64 darwin-amd64 linux-amd64 linux-arm64; do
+              out="$stage/$platform/$dir"
+              mkdir -p "$out"
+              tar -C "$dir" --exclude='*.go' --exclude=go.mod --exclude=go.sum --exclude=testdata --exclude=.gitignore -cf - . | tar -C "$out" -xf -
+              find "$out" -type d -empty -delete # folders that held only Go sources
+              mkdir -p "$(dirname "$out/$cmd")"
+              echo "== $dir for $platform"
+              (cd "$dir" && CGO_ENABLED=0 GOOS="${platform%-*}" GOARCH="${platform#*-}" go build -trimpath -ldflags='-s -w' -o "$out/$cmd" .)
+              echo "$platform=$out" >> "$RUNNER_TEMP/inputs.txt"
+            done
+          done
+
+      - name: Pack the extensions and write index.json
+        run: |
+          set -euo pipefail
+          mapfile -t inputs < "$RUNNER_TEMP/inputs.txt"
+          "$RUNNER_TEMP/flint-extindex" build -out dist \
+            -base-url "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/" \
+            "${inputs[@]}"
+
+      # The key reaches the tool through the environment, never the command
+      # line. sign fails without it and writes no signature.
+      - name: Sign index.json
+        env:
+          FLINT_EXTINDEX_KEY: ${{ secrets.FLINT_EXTINDEX_KEY }}
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/flint-extindex" sign dist/index.json | tee "$RUNNER_TEMP/sign.txt"
+
+      # Before uploading: the signature, the index's content and every
+      # archive's size and SHA-256, as Flint will check them. With the
+      # FLINT_EXTINDEX_PUBLIC_KEY variable this is the key Flint has; without
+      # it, the public half of the key that just signed.
+      - name: Verify what will be published
+        env:
+          PUBLIC_KEY: ${{ vars.FLINT_EXTINDEX_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+          key="$PUBLIC_KEY"
+          if [ -z "$key" ]; then
+            key=$(sed -n 's/.*(public key: \(.*\))$/\1/p' "$RUNNER_TEMP/sign.txt")
+            echo "::notice::FLINT_EXTINDEX_PUBLIC_KEY is not set: verified against the signing key's own public half ($key). Set the variable to the key built into Flint to catch a wrong secret."
+          fi
+          test -s dist/index.json.sig
+          "$RUNNER_TEMP/flint-extindex" verify -key "$key" -archives dist dist/index.json
+          ls -l dist
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test -s dist/index.json.sig # never publish an unsigned index
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --title "Extensions $TAG" --latest \
+              --notes "Prebuilt extensions and the signed index (index.json, index.json.sig) that Flint installs from: Settings ▸ Extensions ▸ Extension index."
+          fi
