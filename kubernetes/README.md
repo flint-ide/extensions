@@ -78,7 +78,7 @@ cd ../flint && go run ./cmd/flint-webview -title Kubernetes -o "$OLDPWD/ui/panel
 | `state.go` | What the panel remembers |
 | `status.go` | The agent tool's summary |
 | `rpc.go` | JSON-RPC over stdin and stdout |
-| `webview/` | The panel's source (TypeScript/React on `@flint-ide/ui`): `panel.tsx` is the entry, `store.ts` the state and requests, `Pickers.tsx`, `AppsView.tsx`, `ResourcesView.tsx`, `Tree.tsx`, `RowMenu.tsx`, `Confirm.tsx` and `Notices.tsx` the parts. Not shipped |
+| `webview/` | The panel's source (TypeScript/React on `@flint-ide/ui`): `panel.tsx` is the entry, `store.ts` the state and requests, `Pickers.tsx`, `AppsView.tsx`, `ResourcesView.tsx`, `Tree.tsx`, `Confirm.tsx` and `Notices.tsx` the parts. Not shipped |
 | `ui/panel.html` | The panel's page, self-contained, generated from `webview/` with Flint's `go run ./cmd/flint-webview` (see Build and install); do not edit |
 | `internal/kube` | kubectl: contexts, namespaces, overview, apps and health, actions, diagnosis |
 | `internal/redact` | Redaction of what the diagnosis sends |

@@ -1,6 +1,6 @@
 // The Kubernetes panel: a webview page built with Flint's UI kit
 // (go run ./cmd/flint-webview from a Flint checkout; see ../README.md ▸ Files).
-import { syncFlintTheme } from '@flint-ide/ui'
+import { ContextMenuProvider, syncFlintTheme } from '@flint-ide/ui'
 import { createRoot } from 'react-dom/client'
 import { useActions } from './actions'
 import { AppsView } from './AppsView'
@@ -8,7 +8,6 @@ import { ConfirmProvider } from './Confirm'
 import { Notices } from './Notices'
 import { Header, Pickers } from './Pickers'
 import { ResourcesView } from './ResourcesView'
-import { RowMenuProvider } from './RowMenu'
 import { useKube, withKey } from './store'
 import './panel.css'
 
@@ -41,13 +40,15 @@ document.addEventListener('contextmenu', (e) => {
 })
 
 syncFlintTheme()
+// A sidebar: the kit's dense rows (24 px menus and lists), portaled popups included.
+document.body.classList.add('fui-dense')
 const root = document.getElementById('root')
 if (root) {
   createRoot(root).render(
     <ConfirmProvider>
-      <RowMenuProvider scroller={TREE_ID}>
+      <ContextMenuProvider>
         <Panel />
-      </RowMenuProvider>
+      </ContextMenuProvider>
     </ConfirmProvider>,
   )
 }

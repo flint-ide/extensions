@@ -1,10 +1,9 @@
 // Tree rows: a dense 22 px row with a twisty, a kind tag or a health dot, the
 // name, a hint, a status pill and the row's actions (right-click or the "more"
 // button that shows on hover).
-import { BadgeCounter, Spinner } from '@flint-ide/ui'
-import { ChevronDown, ChevronRight } from '@flint-ide/ui/icons'
+import { BadgeCounter, IconButton, Spinner, useContextMenu } from '@flint-ide/ui'
+import { ChevronDown, ChevronRight, MoreHorizontal } from '@flint-ide/ui/icons'
 import type { ReactNode } from 'react'
-import { MoreButton, useContextMenu } from './RowMenu'
 import type { MenuEntry, Tone } from './types'
 import './tree.css'
 
@@ -41,10 +40,21 @@ export function Row({ depth, title, className, menu, onClick, onDoubleClick, exp
             }
           : undefined
       }
-      onContextMenu={menu ? contextMenu(menu) : undefined}
+      onContextMenu={menu ? contextMenu.onContextMenu(menu) : undefined}
     >
       {children}
-      {menu && <MoreButton entries={menu} />}
+      {menu && (
+        <IconButton
+          className="k-more"
+          variant="ghost"
+          size="sm"
+          aria-label="Actions"
+          onClick={contextMenu.onOpenUnder(menu)}
+          onDoubleClick={(e) => e.stopPropagation()}
+        >
+          <MoreHorizontal />
+        </IconButton>
+      )}
     </div>
   )
 }

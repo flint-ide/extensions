@@ -178,34 +178,6 @@ input.k-ns-input {
 
 /* ---------- menus and the confirm dialog ---------- */
 
-.k-menu-anchor {
-  position: fixed;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  border: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-/* Sidebar-dense menus and picker lists: 24 px rows instead of 32. */
-.k-menu {
-  font-size: 12px;
-}
-.k-menu [data-slot='dropdown-menu-item'] {
-  min-height: 24px;
-  height: 24px;
-  padding-block: 0;
-  font-size: 12px;
-}
-.k-menu [data-slot='dropdown-menu-shortcut'] {
-  padding-left: 16px;
-  letter-spacing: 0;
-  font-size: 11px;
-}
-.k-picker-popup [data-slot='combobox-item'] {
-  padding-block: 3px;
-  font-size: 12px;
-}
 .k-confirm {
   max-width: calc(100vw - 32px);
 }
