@@ -1,0 +1,183 @@
+/* The tree's rows (Tree.tsx), on Flint's theme variables. */
+
+/* ---------- tree ---------- */
+
+.k-tree {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: 8px;
+}
+.k-row {
+  position: relative;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  white-space: nowrap;
+  cursor: default;
+}
+.k-row[role='button'] {
+  cursor: pointer;
+}
+.k-row:hover {
+  background: var(--bg-hover);
+}
+.k-row:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+.k-depth1 {
+  padding-left: 22px;
+}
+.k-depth2 {
+  padding-left: 40px;
+}
+.k-twisty {
+  width: 12px;
+  flex: none;
+  display: inline-flex;
+  color: var(--fg-faint);
+}
+.k-twisty svg {
+  width: 12px;
+  height: 12px;
+}
+.k-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg-name, var(--fg));
+}
+.k-section .k-name {
+  flex: 1;
+}
+.k-hint {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.k-count {
+  margin-left: auto;
+}
+.k-kind {
+  flex: none;
+  min-width: 22px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--info);
+}
+.k-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+}
+.k-dot.ok {
+  background: var(--ok);
+}
+.k-dot.warn {
+  background: var(--warn);
+}
+.k-dot.bad {
+  background: var(--danger);
+}
+.k-status {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+  line-height: 16px;
+}
+.k-status.ok {
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 14%, transparent);
+}
+.k-status.warn {
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+}
+.k-status.bad {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+.k-status.muted {
+  color: var(--fg-muted);
+}
+.k-source {
+  flex: none;
+  height: 16px;
+  padding: 0 5px;
+  font-size: 10px;
+}
+.k-ai {
+  flex: none;
+  height: 18px;
+  padding: 0 6px;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--accent);
+}
+.k-ai svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* The row's "more" button: shown on hover or focus, over the end of the row. */
+.k-more {
+  position: absolute;
+  right: 4px;
+  top: 1px;
+  width: 20px;
+  height: 20px;
+  min-width: 0;
+  padding: 0;
+  opacity: 0;
+  color: var(--fg-muted);
+  background: var(--bg-hover);
+}
+.k-more svg {
+  width: 14px;
+  height: 14px;
+}
+.k-row:hover .k-more,
+.k-more:focus-visible,
+.k-more[aria-expanded='true'] {
+  opacity: 1;
+}
+
+.k-app-body {
+  padding-bottom: 4px;
+}
+.k-problem {
+  padding: 1px 10px 2px 30px;
+  font-size: 11px;
+  line-height: 1.35;
+  word-break: break-word;
+  white-space: normal;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.k-problem.bad {
+  color: var(--danger);
+}
+.k-problem.warn {
+  color: var(--warn);
+}
+.k-pod-problem {
+  padding-left: 56px;
+}
+.k-more-problems {
+  height: auto;
+  margin-left: 30px;
+  padding: 0;
+  font-size: 11px;
+}

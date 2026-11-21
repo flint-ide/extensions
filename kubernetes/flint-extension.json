@@ -2,7 +2,7 @@
   "contract": 1,
   "id": "flint.kubernetes",
   "name": "Kubernetes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "Flint",
   "description": "Kubernetes clusters through kubectl: any context of the kubeconfig without switching the global one, apps with their health, workloads, pods, services and jobs, actions, logs and shells in terminal tabs, and a status tool for agents.",
   "run": { "command": "kubernetes-ext", "env": ["KUBECONFIG", "AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE", "AWS_PROFILE", "AWS_REGION", "AWS_DEFAULT_REGION", "AWS_CA_BUNDLE", "SAML2AWS_CONFIGFILE", "GOOGLE_APPLICATION_CREDENTIALS", "CLOUDSDK_CONFIG", "AZURE_CONFIG_DIR"] },

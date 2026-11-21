@@ -104,3 +104,34 @@ jobs:
           dirs=()
           for m in */flint-extension.json; do dirs+=("$(dirname "$m")"); done
           "$RUNNER_TEMP/flint-extcheck" "${dirs[@]}"
+
+      # A page written with Flint's UI kit (webview/*.tsx) is bundled by Flint's
+      # cmd/flint-webview into the committed ui/*.html. Rebuild it into a temp
+      # file to prove the source still builds against Flint's kit; the result
+      # isn't compared with the committed page, which follows Flint at release time.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: hashFiles('*/webview/*.tsx') != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: .flint/frontend/package-lock.json
+
+      - name: Install Flint's frontend dependencies (no install scripts)
+        if: hashFiles('*/webview/*.tsx') != ''
+        working-directory: .flint/frontend
+        run: npm ci --ignore-scripts
+
+      - name: Build every webview page from its source
+        if: hashFiles('*/webview/*.tsx') != ''
+        run: |
+          # webview/<page>.tsx is the source of ui/<page>.html.
+          status=0
+          for src in */webview/*.tsx; do
+            dir=${src%%/*}
+            page=$(basename "$src" .tsx)
+            [ -f "$dir/ui/$page.html" ] || continue
+            echo "== $dir/ui/$page.html"
+            (cd .flint && go run ./cmd/flint-webview -title "$(jq -r .name "$GITHUB_WORKSPACE/$dir/flint-extension.json")" \
+              -o "$RUNNER_TEMP/webview/$dir/$page.html" "$GITHUB_WORKSPACE/$src") || status=1
+          done
+          exit $status

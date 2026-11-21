@@ -1,11 +1,11 @@
 # Kubernetes
 
-Shows Kubernetes clusters through `kubectl`: any context of your kubeconfig, without switching the global one. You see apps with their health and problems, plus workloads, pods, services and jobs, and you can act on them. Logs and shells open in terminal tabs. It replaces the Kubernetes panel that used to be built into Flint and works the same way. Its UI is its own page (a webview).
+Shows Kubernetes clusters through `kubectl`: any context of your kubeconfig, without switching the global one. You see apps with their health and problems, plus workloads, pods, services and jobs, and you can act on them. Logs and shells open in terminal tabs. It replaces the Kubernetes panel that used to be built into Flint and works the same way. Its UI is its own page (a webview), built with Flint's UI kit (`@flint-ide/ui`).
 
 | | |
 |---|---|
 | Id | `flint.kubernetes` |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Contract | 1, with webviews and terminal tabs (Flint with window/openTerminal) |
 | Permissions | `terminal`, `agent.ask` |
 | Starts | when its panel is shown, its command runs, or an agent calls its tool |
@@ -16,7 +16,7 @@ Shows Kubernetes clusters through `kubectl`: any context of your kubeconfig, wit
   - **Context and namespace pickers.** The global current context is left alone. The panel remembers the context you picked, the namespace you picked for each context, and the view. **★** makes the shown context the kubeconfig's current one, for every terminal and tool. The terminal button opens a shell whose `kubectl` works in the shown context and namespace (see Privacy).
   - **Apps view.** Apps come from Flux Kustomizations, Argo CD, Helm releases, `app.kubernetes.io` labels, or single workloads, worst first. Each app shows its problems, ingresses, services, workloads with their rollout and pods. **✦ AI** gathers an unhealthy app's state and its failing pods' recent logs, with secrets redacted, into the agent chat's draft for you to review and send.
   - **Resources view.** Workloads, pods, services and jobs, with a filter.
-  - **Context menus.**
+  - **Row actions.** Right-click a row, or use its **⋯** button (shown on hover), for its menu:
     - Workloads: logs, describe, rollout status and history, rollout restart, undo rollout, scale.
     - Pods: logs, shell (one per container), describe, port forward, delete.
     - Services: port forward, describe.
@@ -54,6 +54,16 @@ go build -o kubernetes-ext .
 
 In Flint, run **Install Extension from Folder…** and pick this folder.
 
+### The panel's page
+
+`ui/panel.html` is generated from the TypeScript/React source in `webview/` and committed, because the release packs the folder as it is (without `webview/`). After changing the source, rebuild it from a Flint checkout (`git clone https://github.com/flint-ide/flint ../flint`); once per checkout, install its frontend dependencies with `npm ci --ignore-scripts` in `frontend/`:
+
+```bash
+cd ../flint && go run ./cmd/flint-webview -title Kubernetes -o "$OLDPWD/ui/panel.html" "$OLDPWD/webview/panel.tsx"
+```
+
+`flint-webview` bundles the page, React and the kit's components and styles into one self-contained file. CI rebuilds it from the source on every run to check that it still builds against Flint's kit.
+
 ## Files
 
 | File | What it holds |
@@ -68,7 +78,8 @@ In Flint, run **Install Extension from Folder…** and pick this folder.
 | `state.go` | What the panel remembers |
 | `status.go` | The agent tool's summary |
 | `rpc.go` | JSON-RPC over stdin and stdout |
-| `ui/panel.html` | The panel's page, self-contained |
+| `webview/` | The panel's source (TypeScript/React on `@flint-ide/ui`): `panel.tsx` is the entry, `store.ts` the state and requests, `Pickers.tsx`, `AppsView.tsx`, `ResourcesView.tsx`, `Tree.tsx`, `RowMenu.tsx`, `Confirm.tsx` and `Notices.tsx` the parts. Not shipped |
+| `ui/panel.html` | The panel's page, self-contained, generated from `webview/` with Flint's `go run ./cmd/flint-webview` (see Build and install); do not edit |
 | `internal/kube` | kubectl: contexts, namespaces, overview, apps and health, actions, diagnosis |
 | `internal/redact` | Redaction of what the diagnosis sends |
 | `internal/awsprof` | AWS profiles of `~/.aws`, their login command and refresh |

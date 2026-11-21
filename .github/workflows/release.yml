@@ -88,7 +88,7 @@ jobs:
             cmd=$(jq -r '.run.command // empty' "$m")
             if [ -z "$cmd" ]; then
               mkdir -p "$stage/any/$dir"
-              tar -C "$dir" --exclude=.gitignore -cf - . | tar -C "$stage/any/$dir" -xf -
+              tar -C "$dir" --exclude=.gitignore --exclude=./webview -cf - . | tar -C "$stage/any/$dir" -xf -
               echo "$stage/any/$dir" >> "$RUNNER_TEMP/inputs.txt"
               continue
             fi
@@ -99,7 +99,7 @@ jobs:
             for platform in darwin-arm64 darwin-amd64 linux-amd64 linux-arm64; do
               out="$stage/$platform/$dir"
               mkdir -p "$out"
-              tar -C "$dir" --exclude='*.go' --exclude=go.mod --exclude=go.sum --exclude=testdata --exclude=.gitignore -cf - . | tar -C "$out" -xf -
+              tar -C "$dir" --exclude='*.go' --exclude=go.mod --exclude=go.sum --exclude=testdata --exclude=.gitignore --exclude=./webview -cf - . | tar -C "$out" -xf -
               find "$out" -type d -empty -delete # folders that held only Go sources
               mkdir -p "$(dirname "$out/$cmd")"
               echo "== $dir for $platform"

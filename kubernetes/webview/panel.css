@@ -1,0 +1,219 @@
+/* The panel's own styles, on Flint's theme variables. The kit's components
+   bring theirs; these lay out the dense sidebar tree around them. */
+
+#root,
+.k-panel {
+  height: 100%;
+}
+.k-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.k-muted {
+  color: var(--fg-muted);
+}
+.k-strong {
+  font-weight: 600;
+}
+.k-grow {
+  flex: 1;
+  min-width: 0;
+}
+.k-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.k-spin {
+  width: 11px;
+  height: 11px;
+}
+
+/* ---------- header and pickers ---------- */
+
+.k-header {
+  height: 32px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px 0 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+.k-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-header button,
+.k-line > button {
+  width: 24px;
+  height: 24px;
+  color: var(--fg-muted);
+}
+.k-header button svg,
+.k-line > button svg {
+  width: 15px;
+  height: 15px;
+}
+.k-pickers {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 10px 8px;
+}
+.k-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.k-line > [data-slot='input-group'],
+.k-picker {
+  flex: 1;
+  min-width: 0;
+}
+.k-picker,
+.k-filter,
+.k-ns-input {
+  height: 26px;
+  font-size: 12px;
+}
+.k-picker input,
+.k-filter input,
+input.k-ns-input {
+  font-size: 12px;
+}
+.k-filter svg {
+  width: 13px;
+  height: 13px;
+}
+.k-ns-input {
+  width: 100%;
+  font-family: var(--font-mono);
+}
+.k-picker input {
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+.k-picker-label {
+  flex: none;
+  font-size: 11px;
+  color: var(--fg-faint);
+}
+.k-filter {
+  flex: 1;
+  min-width: 0;
+}
+.k-picker-popup {
+  max-width: calc(100vw - 16px);
+  font-size: 12px;
+}
+.k-opt-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-opt-hint {
+  margin-left: auto;
+  padding-left: 8px;
+  flex: none;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.k-aws {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.k-link {
+  height: auto;
+  padding: 0;
+  font-size: 11px;
+}
+.k-partial {
+  font-size: 11px;
+}
+
+/* ---------- notices ---------- */
+
+.k-notice {
+  padding: 12px 16px;
+  color: var(--fg-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.k-alert {
+  margin: 4px 10px 8px;
+  font-size: 12px;
+}
+.k-alert-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.k-alert-action {
+  height: auto;
+  padding: 0;
+  font-size: 12px;
+}
+.k-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
+}
+.k-empty {
+  margin: 8px 10px;
+  padding: 24px 12px;
+}
+
+/* ---------- menus and the confirm dialog ---------- */
+
+.k-menu-anchor {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+/* Sidebar-dense menus and picker lists: 24 px rows instead of 32. */
+.k-menu {
+  font-size: 12px;
+}
+.k-menu [data-slot='dropdown-menu-item'] {
+  min-height: 24px;
+  height: 24px;
+  padding-block: 0;
+  font-size: 12px;
+}
+.k-menu [data-slot='dropdown-menu-shortcut'] {
+  padding-left: 16px;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+.k-picker-popup [data-slot='combobox-item'] {
+  padding-block: 3px;
+  font-size: 12px;
+}
+.k-confirm {
+  max-width: calc(100vw - 32px);
+}
+.k-confirm-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+}
