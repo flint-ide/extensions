@@ -125,6 +125,10 @@ jobs:
         if: hashFiles('*/webview/*.tsx') != ''
         run: |
           # webview/<page>.tsx is the source of ui/<page>.html.
+          if [ ! -d .flint/cmd/flint-webview ]; then
+            echo "::warning::This Flint checkout has no cmd/flint-webview (added in flint-ide/flint#95); webview pages were not rebuilt."
+            exit 0
+          fi
           status=0
           for src in */webview/*.tsx; do
             dir=${src%%/*}
