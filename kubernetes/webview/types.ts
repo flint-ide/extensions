@@ -1,3 +1,4 @@
+import type { ContextMenuEntry } from '@flint-ide/ui'
 // The shapes of the process's answers (internal/kube, internal/awsprof, state.go).
 
 export type KubeContext = {
@@ -123,4 +124,5 @@ export type Saved = {
 export type Tone = 'ok' | 'warn' | 'bad' | 'muted'
 
 /** A context menu entry, or a separator. */
-export type MenuEntry = { readonly label: string; readonly hint?: string; readonly danger?: boolean; readonly onSelect: () => void } | 'sep'
+/** A row menu entry: Flint's UI kit's context menu entry ('separator' between groups). */
+export type MenuEntry = ContextMenuEntry

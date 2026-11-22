@@ -11,8 +11,6 @@ import type { App, Ingress, Kustomization, Overview, Pod, Service, Tone, Workloa
 import { Dot, Hint, Kind, Name, Problem, Row, Status, Twisty } from './Tree'
 
 const MAX_PROBLEMS = 6
-// Badge's colors are fixed hex values; the source tag follows Flint's accent instead.
-const SOURCE_STYLE = { color: 'var(--accent)', background: 'color-mix(in srgb, var(--accent) 14%, transparent)', borderColor: 'transparent' }
 
 type Toggles = { readonly onApp: (key: string, open: boolean) => void; readonly onMore: (key: string) => void }
 type Props = { readonly ov: Overview; readonly state: State; readonly actions: Actions } & Toggles
@@ -70,7 +68,7 @@ function AppNode({ app, idx, state, actions: a, onApp, onMore }: NodeProps) {
         <Dot tone={healthTone(app.health)} />
         <Name strong>{app.name}</Name>
         {source && (
-          <Badge size="sm" badgeStyle="light" className="k-source" style={SOURCE_STYLE}>
+          <Badge size="sm" color="orange" badgeStyle="light" className="k-source">
             {source}
           </Badge>
         )}

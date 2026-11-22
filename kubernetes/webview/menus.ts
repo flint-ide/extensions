@@ -18,7 +18,7 @@ export const resourcesWorkloadMenu = (a: Actions, w: Workload): Entries => [
   { label: 'Logs', hint: resourceRef(w.kind, w.name), onSelect: () => a.workloadLogs(w) },
   { label: 'Describe', onSelect: () => a.describe(w.kind, w.name) },
   { label: 'Rollout Restart', onSelect: () => void a.restartWorkload(w) },
-  ...(w.kind === 'DaemonSet' ? [] : ['sep' as const, ...scaleEntries(a, w, true)]),
+  ...(w.kind === 'DaemonSet' ? [] : ['separator' as const, ...scaleEntries(a, w, true)]),
 ]
 
 export function resourcesPodMenu(a: Actions, p: Pod): Entries {
@@ -32,7 +32,7 @@ export function resourcesPodMenu(a: Actions, p: Pod): Entries {
     ...shells,
     { label: 'Describe', onSelect: () => a.describe('Pod', p.name) },
     ...portForwards(a, p),
-    'sep',
+    'separator',
     { label: 'Delete Pod', danger: true, onSelect: () => void a.deletePod(p) },
   ]
 }
@@ -57,12 +57,12 @@ export const kustomizationMenu = (a: Actions, k: Kustomization): Entries => [
 ]
 
 export const appWorkloadMenu = (a: Actions, w: Workload, app: App): Entries => [
-  ...(app.health !== 'ok' ? [{ label: 'Diagnose with AI', hint: 'agent chat', onSelect: () => void a.diagnose(app) }, 'sep' as const] : []),
+  ...(app.health !== 'ok' ? [{ label: 'Diagnose with AI', hint: 'agent chat', onSelect: () => void a.diagnose(app) }, 'separator' as const] : []),
   { label: 'Rollout Status', hint: 'kubectl rollout status', onSelect: () => a.rolloutStatus(w) },
   { label: 'Rollout History', onSelect: () => a.rolloutHistory(w) },
   { label: 'Logs', onSelect: () => a.workloadLogs(w) },
   { label: 'Describe', onSelect: () => a.describe(w.kind, w.name) },
-  'sep',
+  'separator',
   { label: 'Rollout Restart', onSelect: () => void a.restartWorkload(w) },
   { label: 'Undo Rollout', hint: 'previous revision', danger: true, onSelect: () => void a.undoRollout(w) },
   ...(w.kind === 'DaemonSet' ? [] : scaleEntries(a, w, false)),
@@ -73,6 +73,6 @@ export const appPodMenu = (a: Actions, p: Pod): Entries => [
   { label: 'Shell', onSelect: () => a.openShell(p) },
   { label: 'Describe', onSelect: () => a.describe('Pod', p.name) },
   ...portForwards(a, p),
-  'sep',
+  'separator',
   { label: 'Delete Pod', danger: true, onSelect: () => void a.deletePod(p) },
 ]
