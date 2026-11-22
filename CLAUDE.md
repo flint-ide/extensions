@@ -10,7 +10,7 @@ If an extension needs something the contract doesn't offer, the change goes to F
 
 ## Layout
 
-- One folder per extension, named after it (`stats/`, `notes/`, later `database/`, `kubernetes/`, `docker/`), with `flint-extension.json` at its root.
+- One folder per extension, named after it (`stats/`, `kubernetes/`, `docker/`), with `flint-extension.json` at its root.
 - Every extension has a `README.md` in the format of `stats/README.md`: the id/version/contract/permissions/starts table, What it adds, Settings, Privacy (what it reads, network, storage), Build and install, Files. Keep it in step with the manifest.
 - Add a row to the table in the root `README.md` for a new extension.
 
@@ -57,7 +57,7 @@ git clone https://github.com/flint-ide/flint ../flint   # once
 
 CI also runs it every day against Flint's `main`, so a contract change in Flint that breaks an extension shows up here. An extension that needs an unreleased contract fails this job until that Flint change is merged; say so in the pull request.
 
-Add tests for every request the extension answers (see `notes/main_test.go`: requests, notifications sent, calls to Flint answered by the test). Test concurrency with `go test -race`.
+Add tests for every request the extension answers (see `docker/main_test.go`: requests, notifications sent, calls to Flint answered by the test). Test concurrency with `go test -race`.
 
 ## Releases
 
